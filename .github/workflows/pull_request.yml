@@ -1,0 +1,47 @@
+name: Pull Request
+
+on:
+
+  pull_request:
+    branches:
+      - main
+
+jobs:
+
+  automerge_dependabot:
+    permissions:
+      pull-requests: write
+      contents: write
+    uses: "philipcristiano/workflows/.github/workflows/automerge_dependabot.yml@main"
+    with:
+      automerge: true
+    secrets:
+      WF_GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
+
+  check-for-cc:
+    runs-on: ubuntu-latest
+    steps:
+      - name: check-for-cc
+        id: check-for-cc
+        uses: agenthunt/conventional-commit-checker-action@v2.0.0
+
+  docker_build:
+    uses: "philipcristiano/workflows/.github/workflows/docker-build.yml@main"
+    with:
+      timeout: 25
+
+  rust:
+    uses: "philipcristiano/workflows/.github/workflows/rust.yml@main"
+    with:
+      setup_script: |
+          curl -sL https://github.com/tailwindlabs/tailwindcss/releases/download/v3.4.1/tailwindcss-linux-x64 -o tailwindcss
+          chmod +x tailwindcss
+          mv tailwindcss /usr/local/bin
+
+  flake:
+    uses: "philipcristiano/workflows/.github/workflows/nix.yml@main"
+    with:
+      flakes-from-devshell: true
+      script: |
+        unset DATABASE_URL
+        cargo build
