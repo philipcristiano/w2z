@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/philipcristiano/w2z/compare/v0.2.0...v0.3.0) (2024-03-17)
+
+
+### Features
+
+* Better sizing on ios/mobile ([d557343](https://github.com/philipcristiano/w2z/commit/d557343fc6145883c9f3c50901917e0af6b37596))
+
 ## [0.2.0](https://github.com/philipcristiano/w2z/compare/v0.1.0...v0.2.0) (2024-03-17)
 
 
