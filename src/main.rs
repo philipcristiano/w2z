@@ -63,6 +63,7 @@ async fn main() {
         // `GET /` goes to `root`
         .route("/", get(root))
         .route("/", post(post_note))
+        .route("/static/tailwind.css", get(http_get_tailwind_css))
         .nest("/oidc", oidc_router.with_state(app_config.auth.clone()))
         .with_state(app_config.clone())
         .layer(CookieManagerLayer::new())
@@ -91,8 +92,8 @@ async fn root(user: Option<service_conventions::oidc::OIDCUser>) -> Response {
               }
 
               form method="post" action="/" {
-                textarea id="form_text" name="form_text" {}
-                input type="submit" {}
+                textarea id="form_text" class="border" name="form_text" {}
+                input type="submit" class="border" {}
               }
 
               a href="/oidc/login" { "Login" }
@@ -135,7 +136,7 @@ async fn write_file(github: &GithubConfig, contents: String) -> anyhow::Result<b
     octocrab.repos(&github.owner, &github.repository)
     .create_file(
         filename,
-        "Create note ",
+        "Create note",
         &new_contents
     )
     .branch(&github.branch)
@@ -152,4 +153,11 @@ async fn write_file(github: &GithubConfig, contents: String) -> anyhow::Result<b
     .send()
     .await?;
     Ok(true)
+}
+
+async fn http_get_tailwind_css() -> impl IntoResponse {
+    let t = include_bytes!("../tailwind/tailwind.css");
+    let mut headers = axum::http::HeaderMap::new();
+    headers.insert("Content-Type", "text/css".parse().unwrap());
+    (headers, t)
 }
