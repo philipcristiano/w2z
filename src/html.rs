@@ -30,9 +30,9 @@ fn maud_body(content: maud::Markup) -> maud::Markup {
     html! {
         body {
             (maud_nav())
-            div class="container w-full md:max-w-3xl mx-auto pt-20 place-content-center" {
+            div class="container w-full max-3-md lg:max-w-3xl mx-auto pt-20 place-content-center" {
 
-                div class="w-full px-4 md:px-6  leading-normal" {
+                div class="w-full px-2 lg:px-6  leading-normal" {
                     div class="span8" {
                         (content)
 

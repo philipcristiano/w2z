@@ -1,7 +1,7 @@
 use std::path::Path;
 
 fn main() {
-    if std::env::var_os("TIMELINE_SKIP_TAILWIND").is_none() {
+    if std::env::var_os("SKIP_TAILWIND").is_none() {
         build_tailwind();
     }
 }
