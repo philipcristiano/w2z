@@ -27,13 +27,6 @@
   p {
     @apply py-2;
   }
-  .post {
-    @apply bg-gray-200 p-5 rounded-md my-3;
-  }
-
-  .post_body {
-    @apply bg-slate-200 p-3;
-  }
 
   pre {
     @apply space-x-3;
