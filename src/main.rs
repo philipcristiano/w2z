@@ -92,7 +92,7 @@ async fn root(user: Option<service_conventions::oidc::OIDCUser>) -> Response {
               }
 
               form method="post" action="/" {
-                textarea id="form_text" class="border" name="form_text" {}
+                textarea id="form_text" class="border min-w-full" name="form_text" {}
                 input type="submit" class="border" {}
               }
 
