@@ -14,6 +14,7 @@ use std::net::SocketAddr;
 
 use tower_cookies::{Cookie, CookieManagerLayer, Cookies, Key};
 
+mod html;
 
 #[derive(Parser, Debug)]
 pub struct Args {
@@ -79,8 +80,8 @@ async fn main() {
 // basic handler that responds with a static string
 async fn root(user: Option<service_conventions::oidc::OIDCUser>) -> Response {
     if let Some(user) = user {
+        html::maud_page(
         html! {
-         (DOCTYPE)
               p { "Welcome! " ( user.id)}
               @if let Some(name) = user.name {
                   p{ ( name ) }
@@ -95,15 +96,14 @@ async fn root(user: Option<service_conventions::oidc::OIDCUser>) -> Response {
               }
 
               a href="/oidc/login" { "Login" }
-        }
+        })
         .into_response()
     } else {
-
+        html::maud_page(
         html! {
-         (DOCTYPE)
             p { "Welcome! You need to login" }
             a href="/oidc/login" { "Login" }
-        }.into_response()
+        }).into_response()
     }
 }
 
