@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.4.0](https://github.com/philipcristiano/w2z/compare/v0.3.0...v0.4.0) (2024-03-18)
+
+
+### Features
+
+* Move template to config file ([8f2b8fe](https://github.com/philipcristiano/w2z/commit/8f2b8fe8d26c111b7c3cbfc5e86da9bcc41b33c8))
+
+
+### Bug Fixes
+
+* **deps:** update rust crate toml to 0.8.12 ([da493d8](https://github.com/philipcristiano/w2z/commit/da493d82a0a684e0a2cdd28f6b527412107f4c91))
+
 ## [0.3.0](https://github.com/philipcristiano/w2z/compare/v0.2.0...v0.3.0) (2024-03-17)
 
 
