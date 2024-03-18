@@ -1,0 +1,22 @@
+[auth]
+issuer_url = "https://kanidm.example/oauth2/openid/w2z"
+redirect_url = "http://localhost:3002/oidc/login_auth"
+client_id = "w2z"
+client_secret = "[[CLIENT_SECRET]]"
+post_auth_path = "/"
+
+[github]
+token = "github_pat_..."
+owner = "repo_owner"
+repository = "repo_name"
+branch = "test"
+
+[templates]
+[templates.note]
+path = "contents/notes/{{ now() | date(format=\"%Y/%Y-%m-%dT%H:%M:%SZ\")}}-{{uuid}}.md"
+body = """
++++
++++
+
+{{contents}}
+"""
