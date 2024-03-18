@@ -23,6 +23,7 @@ openidconnect = "3.5.0"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 service_conventions = { version = "0.0.6", features = ["tracing", "oidc"]}
+tera = "1.19.1"
 #service_conventions = { git = "https://github.com/philipcristiano/rust_service_conventions.git", branch = "router-state", features = ["tracing", "oidc"]}
 tokio = { version = "1.36.0", features = ["full"] }
 toml = "0.8.11"
