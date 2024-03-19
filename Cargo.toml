@@ -32,4 +32,4 @@ tower-cookies = { version = "0.10.0", features = ["signed", "private"]}
 tower-http = { version = "0.5.2", features = ["tracing", "trace"] }
 tracing = "0.1.40"
 url = "2.5.0"
-uuid = {version = "1.7.0", features = ["v4"]}
+uuid = {version = "1.8.0", features = ["v4"]}
