@@ -43,7 +43,7 @@ struct GithubConfig {
 }
 #[derive(Clone, Debug, Deserialize)]
 struct AppConfig {
-    auth: service_conventions::oidc::AuthConfig,
+    auth: service_conventions::oidc::OIDCConfig,
     github: GithubConfig,
     templates: HashMap<String, Template>,
 }
@@ -57,8 +57,13 @@ struct AppState {
 
 impl From<AppConfig> for AppState {
     fn from(item: AppConfig) -> Self {
+        let auth_config = service_conventions::oidc::AuthConfig {
+            oidc_config: item.auth,
+            post_auth_path: "/".to_string(),
+            scopes: vec!["profile".to_string(), "email".to_string()],
+        };
         AppState {
-            auth: item.auth,
+            auth: auth_config,
             github: item.github,
             templates: create_tera(&item.templates),
         }
