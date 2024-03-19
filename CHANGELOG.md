@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.4.1](https://github.com/philipcristiano/w2z/compare/v0.4.0...v0.4.1) (2024-03-19)
+
+
+### Bug Fixes
+
+* **deps:** update rust crate service_conventions to 0.0.7 ([b3ba415](https://github.com/philipcristiano/w2z/commit/b3ba4158dac2ba50c393a4fac56913f24e053a8e))
+* **deps:** update rust crate uuid to 1.8.0 ([8b817a6](https://github.com/philipcristiano/w2z/commit/8b817a62f6621866ed8cbb0aa5bc06582b7b5358))
+
 ## [0.4.0](https://github.com/philipcristiano/w2z/compare/v0.3.0...v0.4.0) (2024-03-18)
 
 
