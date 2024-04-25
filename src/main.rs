@@ -96,13 +96,15 @@ async fn main() {
     let app_state: AppState = app_config.into();
 
     let oidc_router = service_conventions::oidc::router(app_state.auth.clone());
+
+    let serve_assets = axum_embed::ServeEmbed::<StaticAssets>::new();
     let app = Router::new()
         // `GET /` goes to `root`
         .route("/", get(root))
         .route("/", post(post_note))
-        .route("/static/tailwind.css", get(http_get_tailwind_css))
         .nest("/oidc", oidc_router.with_state(app_state.auth.clone()))
         .with_state(app_state.clone())
+        .nest_service("/static", serve_assets)
         .layer(CookieManagerLayer::new())
         .layer(
             TraceLayer::new_for_http()
@@ -230,11 +232,4 @@ async fn write_file(github: &GithubConfig, uf: &UploadableFile) -> anyhow::Resul
         .send()
         .await?;
     Ok(true)
-}
-
-async fn http_get_tailwind_css() -> impl IntoResponse {
-    let t = include_bytes!("../tailwind/tailwind.css");
-    let mut headers = axum::http::HeaderMap::new();
-    headers.insert("Content-Type", "text/css".parse().unwrap());
-    (headers, t)
 }
