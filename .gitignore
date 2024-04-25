@@ -16,3 +16,5 @@ target/
 w2z.toml
 
 tailwind/tailwind.css
+static/tailwind.css
+
