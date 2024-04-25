@@ -11,6 +11,8 @@ pub fn maud_page(content: maud::Markup) -> maud::Markup {
 fn maud_header() -> maud::Markup {
     html! {
         link rel="stylesheet" href="static/tailwind.css";
+        link rel="stylesheet" href="static/quill/snow.css";
+        script src="/static/quill/quill.js" {}
         meta name="viewport" content="width=device-width, initial-scale=1.0";
     }
 }

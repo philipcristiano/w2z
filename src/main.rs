@@ -14,6 +14,12 @@ use std::net::SocketAddr;
 
 use tower_cookies::{Cookie, CookieManagerLayer, Cookies, Key};
 
+use rust_embed::RustEmbed;
+#[derive(RustEmbed, Clone)]
+#[folder = "static/"]
+struct StaticAssets;
+
+
 mod html;
 
 #[derive(Parser, Debug)]
@@ -131,6 +137,7 @@ fn create_tera(templates: &HashMap<String, Template>) -> tera::Tera {
 }
 // basic handler that responds with a static string
 async fn root(user: Option<service_conventions::oidc::OIDCUser>) -> Response {
+    use maud::PreEscaped;
     if let Some(user) = user {
         html::maud_page(html! {
               p { "Welcome! " ( user.id)}
@@ -142,11 +149,10 @@ async fn root(user: Option<service_conventions::oidc::OIDCUser>) -> Response {
               }
 
               form method="post" action="/" {
-                textarea id="form_text" class="border min-w-full" name="form_text" {}
+                div id="form_text" class="border min-w-full" name="form_text" {}
                 input type="submit" class="border" {}
               }
-
-              a href="/oidc/login" { "Login" }
+              script src="/static/quill/editor.js" {}
         })
         .into_response()
     } else {
