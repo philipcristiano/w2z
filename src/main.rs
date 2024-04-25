@@ -14,6 +14,12 @@ use std::net::SocketAddr;
 
 use tower_cookies::{Cookie, CookieManagerLayer, Cookies, Key};
 
+use rust_embed::RustEmbed;
+#[derive(RustEmbed, Clone)]
+#[folder = "static/"]
+struct StaticAssets;
+
+
 mod html;
 
 #[derive(Parser, Debug)]
@@ -90,13 +96,15 @@ async fn main() {
     let app_state: AppState = app_config.into();
 
     let oidc_router = service_conventions::oidc::router(app_state.auth.clone());
+
+    let serve_assets = axum_embed::ServeEmbed::<StaticAssets>::new();
     let app = Router::new()
         // `GET /` goes to `root`
         .route("/", get(root))
         .route("/", post(post_note))
-        .route("/static/tailwind.css", get(http_get_tailwind_css))
         .nest("/oidc", oidc_router.with_state(app_state.auth.clone()))
         .with_state(app_state.clone())
+        .nest_service("/static", serve_assets)
         .layer(CookieManagerLayer::new())
         .layer(
             TraceLayer::new_for_http()
@@ -131,6 +139,7 @@ fn create_tera(templates: &HashMap<String, Template>) -> tera::Tera {
 }
 // basic handler that responds with a static string
 async fn root(user: Option<service_conventions::oidc::OIDCUser>) -> Response {
+    use maud::PreEscaped;
     if let Some(user) = user {
         html::maud_page(html! {
               p { "Welcome! " ( user.id)}
@@ -142,11 +151,10 @@ async fn root(user: Option<service_conventions::oidc::OIDCUser>) -> Response {
               }
 
               form method="post" action="/" {
-                textarea id="form_text" class="border min-w-full" name="form_text" {}
+                div id="form_text" class="border min-w-full" name="form_text" {}
                 input type="submit" class="border" {}
               }
-
-              a href="/oidc/login" { "Login" }
+              script src="/static/quill/editor.js" {}
         })
         .into_response()
     } else {
@@ -224,11 +232,4 @@ async fn write_file(github: &GithubConfig, uf: &UploadableFile) -> anyhow::Resul
         .send()
         .await?;
     Ok(true)
-}
-
-async fn http_get_tailwind_css() -> impl IntoResponse {
-    let t = include_bytes!("../tailwind/tailwind.css");
-    let mut headers = axum::http::HeaderMap::new();
-    headers.insert("Content-Type", "text/css".parse().unwrap());
-    (headers, t)
 }

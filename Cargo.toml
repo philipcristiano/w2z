@@ -33,3 +33,6 @@ tower-http = { version = "0.5.2", features = ["tracing", "trace"] }
 tracing = "0.1.40"
 url = "2.5.0"
 uuid = {version = "1.8.0", features = ["v4"]}
+
+rust-embed = { version = "8.3.0", features = ["axum", "mime-guess", "mime_guess"] }
+axum-embed = "0.1.0"
