@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.5.0](https://github.com/philipcristiano/w2z/compare/v0.4.2...v0.5.0) (2024-04-25)
+
+
+### Features
+
+* Add support for "in_reply_to" form ([9370ded](https://github.com/philipcristiano/w2z/commit/9370ded0bab0dfe1ecc178acd9c77b327d486392))
+
+
+### Bug Fixes
+
+* **deps:** update rust crate anyhow to 1.0.82 ([52b8aef](https://github.com/philipcristiano/w2z/commit/52b8aef9af76089aaa7a96ce0f86316db758347b))
+* **deps:** update rust crate chrono to 0.4.38 ([e4f3feb](https://github.com/philipcristiano/w2z/commit/e4f3feb2ce9f303cc10318112f42fbd2f5f66be6))
+* **deps:** update rust crate octocrab to 0.38.0 ([c786466](https://github.com/philipcristiano/w2z/commit/c78646633eb2352f0dd86b2cc4b7dd7bfc901676))
+* **deps:** update rust crate service_conventions to 0.0.13 ([b01969a](https://github.com/philipcristiano/w2z/commit/b01969ad312eda0098e9e30c3f8c12baf558e4e9))
+* **deps:** update rust crate service_conventions to 0.0.14 ([455ebd1](https://github.com/philipcristiano/w2z/commit/455ebd1e71db4e758f74ca4473b2affe0487d366))
+* **deps:** update rust crate service_conventions to 0.0.15 ([5654b66](https://github.com/philipcristiano/w2z/commit/5654b669fa837c47f3253459ffa046a6ac8140c0))
+* **deps:** update rust crate service_conventions to 0.0.16 ([0a1cb83](https://github.com/philipcristiano/w2z/commit/0a1cb8306690f6b7bff01c3f3d30fe8a01a2c440))
+* More generic static file hosting ([1fafb76](https://github.com/philipcristiano/w2z/commit/1fafb76336fc84071702d912217bb324b3a09e0c))
+
 ## [0.4.2](https://github.com/philipcristiano/w2z/compare/v0.4.1...v0.4.2) (2024-03-31)
 
 
