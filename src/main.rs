@@ -145,14 +145,14 @@ async fn root(user: Option<service_conventions::oidc::OIDCUser>) -> Response {
 
               h2 {"Note"}
               form method="post" action="/notes" {
-                textarea id="form_text" class="border min-w-full" name="form_text" {}
+                textarea white-space="pre-wrap" id="form_text" class="border min-w-full" name="form_text" {}
                 input type="submit" class="border" {}
               }
 
               h2 {"Reply"}
               form method="post" action="/replies" {
                 input id="in_reply_to" class="border min-w-full" name="in_reply_to" {}
-                textarea id="form_text" class="border min-w-full" name="form_text" {}
+                textarea white-space="pre-wrap" id="form_text" class="border min-w-full" name="form_text" {}
                 input type="submit" class="border" {}
               }
 
@@ -179,7 +179,8 @@ struct UploadableFile {
 
 async fn post_note(State(app_state): State<AppState>, Form(form): Form<PostNote>) -> Response {
     tracing::info!("Post form {:?}", form);
-    let uf = render_note(&app_state.templates, form.form_text);
+    let text = form.form_text.replace("\r\n", "\n");
+    let uf = render_note(&app_state.templates, text);
     write_file(&app_state.github, &uf).await;
     // ...
     Redirect::to("/").into_response()
@@ -210,7 +211,8 @@ struct PostReply {
 
 async fn post_reply(State(app_state): State<AppState>, Form(form): Form<PostReply>) -> Response {
     tracing::info!("Post form {:?}", form);
-    let uf = render_reply(&app_state.templates, form.in_reply_to, form.form_text);
+    let text = form.form_text.replace("\r\n", "\n");
+    let uf = render_reply(&app_state.templates, form.in_reply_to, text);
     write_file(&app_state.github, &uf).await;
     // ...
     Redirect::to("/").into_response()
