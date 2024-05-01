@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.6.0](https://github.com/philipcristiano/w2z/compare/v0.5.0...v0.6.0) (2024-05-01)
+
+
+### Features
+
+* Add likes ([6e2c724](https://github.com/philipcristiano/w2z/commit/6e2c7244148ef4a0424c88b598280670b792c796))
+
+
+### Bug Fixes
+
+* **deps:** update rust crate serde to 1.0.199 ([bfc4f5e](https://github.com/philipcristiano/w2z/commit/bfc4f5ec8e755209d10fce68c9b1f1c688350855))
+* **deps:** update rust crate serde to 1.0.200 ([60bd8b8](https://github.com/philipcristiano/w2z/commit/60bd8b80e6d3a22a8a85075a94896c2bd066993b))
+* **deps:** update rust crate serde_json to 1.0.116 ([9c94796](https://github.com/philipcristiano/w2z/commit/9c947967a27ec02db5d1620d4cf1d995b9d8b6e2))
+* Replace returns with only newlines ([edd38ab](https://github.com/philipcristiano/w2z/commit/edd38ab74fd87606cd9724fb0fed30fb9fd6d63b))
+
 ## [0.5.0](https://github.com/philipcristiano/w2z/compare/v0.4.2...v0.5.0) (2024-04-25)
 
 
