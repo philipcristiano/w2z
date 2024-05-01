@@ -102,6 +102,7 @@ async fn main() {
         .route("/", get(root))
         .route("/notes", post(post_note))
         .route("/replies", post(post_reply))
+        .route("/likes", post(post_like))
         .nest("/oidc", oidc_router.with_state(app_state.auth.clone()))
         .with_state(app_state.clone())
         .nest_service("/static", serve_assets)
@@ -152,6 +153,12 @@ async fn root(user: Option<service_conventions::oidc::OIDCUser>) -> Response {
               h2 {"Reply"}
               form method="post" action="/replies" {
                 input id="in_reply_to" class="border min-w-full" name="in_reply_to" {}
+                textarea white-space="pre-wrap" id="form_text" class="border min-w-full" name="form_text" {}
+                input type="submit" class="border" {}
+              }
+              h2 {"Like"}
+              form method="post" action="/likes" {
+                input id="in_like_of" class="border min-w-full" name="in_like_of" {}
                 textarea white-space="pre-wrap" id="form_text" class="border min-w-full" name="form_text" {}
                 input type="submit" class="border" {}
               }
@@ -219,7 +226,6 @@ async fn post_reply(State(app_state): State<AppState>, Form(form): Form<PostRepl
 }
 
 fn render_reply(t: &tera::Tera, in_reply_to: String, form_text: String) -> UploadableFile {
-    let mut terad = tera::Tera::default();
     let mut context = tera::Context::new();
     context.insert("contents", &form_text);
     context.insert("in_reply_to", &in_reply_to);
@@ -230,6 +236,38 @@ fn render_reply(t: &tera::Tera, in_reply_to: String, form_text: String) -> Uploa
     }
     let path = t.render("reply.filename", &context);
     let body = t.render("reply.body", &context);
+    UploadableFile {
+        filename: path.expect("could not render"),
+        contents: body.expect("could not render"),
+    }
+}
+
+#[derive(Clone, Debug, Deserialize)]
+struct PostLike {
+    in_like_of: String,
+    form_text: String,
+}
+
+async fn post_like(State(app_state): State<AppState>, Form(form): Form<PostLike>) -> Response {
+    tracing::info!("Post form {:?}", form);
+    let text = form.form_text.replace("\r\n", "\n");
+    let uf = render_like(&app_state.templates, form.in_like_of, text);
+    write_file(&app_state.github, &uf).await;
+    // ...
+    Redirect::to("/").into_response()
+}
+
+fn render_like(t: &tera::Tera, in_reply_to: String, form_text: String) -> UploadableFile {
+    let mut context = tera::Context::new();
+    context.insert("contents", &form_text);
+    context.insert("in_like_of", &in_reply_to);
+    context.insert("uuid", &uuid::Uuid::new_v4().to_string());
+
+    for name in t.get_template_names() {
+        tracing::info!("Template: {:?}", name);
+    }
+    let path = t.render("like.filename", &context);
+    let body = t.render("like.body", &context);
     UploadableFile {
         filename: path.expect("could not render"),
         contents: body.expect("could not render"),
