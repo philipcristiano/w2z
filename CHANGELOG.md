@@ -1,5 +1,34 @@
 # Changelog
 
+## [0.6.1](https://github.com/philipcristiano/w2z/compare/v0.6.0...v0.6.1) (2024-06-25)
+
+
+### Bug Fixes
+
+* **deps:** update rust crate anyhow to v1.0.83 ([d9d7d3d](https://github.com/philipcristiano/w2z/commit/d9d7d3d07dbbe01acdc54942ee59f31f9e2484f3))
+* **deps:** update rust crate anyhow to v1.0.84 ([3c009dc](https://github.com/philipcristiano/w2z/commit/3c009dcb9aff7ae482afbee0c220bb98d0717c6a))
+* **deps:** update rust crate anyhow to v1.0.85 ([5dca5e1](https://github.com/philipcristiano/w2z/commit/5dca5e1449029375285ea84ac37f4f2c84c9cc1a))
+* **deps:** update rust crate anyhow to v1.0.86 ([a74c88c](https://github.com/philipcristiano/w2z/commit/a74c88ce9ea2af89d12b232e5a1776a487a2924e))
+* **deps:** update rust crate clap to v4.5.5 ([8702273](https://github.com/philipcristiano/w2z/commit/8702273f1f544d42ba1c7aad0480c52d2ae12e4c))
+* **deps:** update rust crate clap to v4.5.6 ([2bb6246](https://github.com/philipcristiano/w2z/commit/2bb6246e6705b4f914e46bee71f9eb56c65a690a))
+* **deps:** update rust crate clap to v4.5.7 ([db11a4b](https://github.com/philipcristiano/w2z/commit/db11a4b5e1437c48922db57e0213a023a7b088db))
+* **deps:** update rust crate rust-embed to v8.4.0 ([d240b96](https://github.com/philipcristiano/w2z/commit/d240b9651a1ed1b19ddeb406fb3d61e1c71e8282))
+* **deps:** update rust crate serde to v1.0.201 ([cb5e4c2](https://github.com/philipcristiano/w2z/commit/cb5e4c2b7c22363d1d56d5562ab5b97652c8f779))
+* **deps:** update rust crate serde to v1.0.202 ([158dae7](https://github.com/philipcristiano/w2z/commit/158dae7b1bd7fadefafd7c7c4b00b158848f090f))
+* **deps:** update rust crate serde to v1.0.203 ([196ab02](https://github.com/philipcristiano/w2z/commit/196ab02abfa55167e16331d470e47635ac5910c2))
+* **deps:** update rust crate serde_json to v1.0.117 ([2eaec2e](https://github.com/philipcristiano/w2z/commit/2eaec2e8209ae7ed2de4d5c3ab3ab8fe75f41594))
+* **deps:** update rust crate serde_json to v1.0.118 ([dc1a500](https://github.com/philipcristiano/w2z/commit/dc1a5006f38df3fb2c76e93afe11fba23b60da14))
+* **deps:** update rust crate tera to v1.20.0 ([3f85d9b](https://github.com/philipcristiano/w2z/commit/3f85d9b8437d0f63d3846bb3450bd0fe0fe16f18))
+* **deps:** update rust crate tokio to v1.38.0 ([8142d8f](https://github.com/philipcristiano/w2z/commit/8142d8fc50c88e8c8724f36383631cabbdf30034))
+* **deps:** update rust crate toml to v0.8.13 ([db324bf](https://github.com/philipcristiano/w2z/commit/db324bf24fb5a03993c0ac4bd53bdcc44087b5d2))
+* **deps:** update rust crate toml to v0.8.14 ([912c252](https://github.com/philipcristiano/w2z/commit/912c252de3d3c9b859e94c732c9104f8b04be07b))
+* **deps:** update rust crate url to v2.5.1 ([bcfcffa](https://github.com/philipcristiano/w2z/commit/bcfcffa0dc5ce21eb378a43095ab623f36897126))
+* **deps:** update rust crate url to v2.5.2 ([b37dcf7](https://github.com/philipcristiano/w2z/commit/b37dcf723ae9ca816f805b4eaaca323448fd8669))
+* **deps:** update rust crate uuid to v1.9.0 ([d4c44c5](https://github.com/philipcristiano/w2z/commit/d4c44c54ed57e4589c78846b1487f88aa4bc3d5d))
+* **deps:** update rust crate uuid to v1.9.1 ([77e9066](https://github.com/philipcristiano/w2z/commit/77e9066546cb77a4bae6601a8bcb7223f9ec5a8e))
+* Handle errors writing to github ([25ed980](https://github.com/philipcristiano/w2z/commit/25ed9802713347abbbde01500a92f91ddac902e1))
+* Include example like config ([09a1f9b](https://github.com/philipcristiano/w2z/commit/09a1f9bbe27bbe07b6eba683571533172e04e925))
+
 ## [0.6.0](https://github.com/philipcristiano/w2z/compare/v0.5.0...v0.6.0) (2024-05-01)
 
 
