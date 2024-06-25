@@ -1,18 +1,18 @@
 use axum::{
-    extract::{FromRef, Query, State},
+    extract::{FromRef, State},
     http::StatusCode,
     response::{IntoResponse, Redirect, Response},
     routing::{get, post},
     Form, Router,
 };
 use clap::Parser;
-use maud::{html, DOCTYPE};
+use maud::html;
 use serde::Deserialize;
 use std::collections::HashMap;
 use std::fs;
 use std::net::SocketAddr;
 
-use tower_cookies::{Cookie, CookieManagerLayer, Cookies, Key};
+use tower_cookies::CookieManagerLayer;
 
 mod html;
 
@@ -184,17 +184,18 @@ struct UploadableFile {
     contents: String,
 }
 
-async fn post_note(State(app_state): State<AppState>, Form(form): Form<PostNote>) -> Response {
+async fn post_note(
+    State(app_state): State<AppState>,
+    Form(form): Form<PostNote>,
+) -> Result<Response, AppError> {
     tracing::info!("Post form {:?}", form);
     let text = form.form_text.replace("\r\n", "\n");
     let uf = render_note(&app_state.templates, text);
-    write_file(&app_state.github, &uf).await;
-    // ...
-    Redirect::to("/").into_response()
+    write_file(&app_state.github, &uf).await?;
+    Ok(Redirect::to("/").into_response())
 }
 
 fn render_note(t: &tera::Tera, form_text: String) -> UploadableFile {
-    let mut terad = tera::Tera::default();
     let mut context = tera::Context::new();
     context.insert("contents", &form_text);
     context.insert("uuid", &uuid::Uuid::new_v4().to_string());
@@ -216,13 +217,16 @@ struct PostReply {
     form_text: String,
 }
 
-async fn post_reply(State(app_state): State<AppState>, Form(form): Form<PostReply>) -> Response {
+async fn post_reply(
+    State(app_state): State<AppState>,
+    Form(form): Form<PostReply>,
+) -> Result<Response, AppError> {
     tracing::info!("Post form {:?}", form);
     let text = form.form_text.replace("\r\n", "\n");
     let uf = render_reply(&app_state.templates, form.in_reply_to, text);
-    write_file(&app_state.github, &uf).await;
+    write_file(&app_state.github, &uf).await?;
     // ...
-    Redirect::to("/").into_response()
+    Ok(Redirect::to("/").into_response())
 }
 
 fn render_reply(t: &tera::Tera, in_reply_to: String, form_text: String) -> UploadableFile {
@@ -248,13 +252,15 @@ struct PostLike {
     form_text: String,
 }
 
-async fn post_like(State(app_state): State<AppState>, Form(form): Form<PostLike>) -> Response {
+async fn post_like(
+    State(app_state): State<AppState>,
+    Form(form): Form<PostLike>,
+) -> Result<Response, AppError> {
     tracing::info!("Post form {:?}", form);
     let text = form.form_text.replace("\r\n", "\n");
     let uf = render_like(&app_state.templates, form.in_like_of, text);
-    write_file(&app_state.github, &uf).await;
-    // ...
-    Redirect::to("/").into_response()
+    write_file(&app_state.github, &uf).await?;
+    Ok(Redirect::to("/").into_response())
 }
 
 fn render_like(t: &tera::Tera, in_reply_to: String, form_text: String) -> UploadableFile {
@@ -274,7 +280,6 @@ fn render_like(t: &tera::Tera, in_reply_to: String, form_text: String) -> Upload
     }
 }
 
-use chrono::Local;
 use octocrab::models::repos::CommitAuthor;
 use octocrab::Octocrab;
 async fn write_file(github: &GithubConfig, uf: &UploadableFile) -> anyhow::Result<bool> {
@@ -305,4 +310,34 @@ async fn write_file(github: &GithubConfig, uf: &UploadableFile) -> anyhow::Resul
         .send()
         .await?;
     Ok(true)
+}
+
+// Make our own error that wraps `anyhow::Error`.
+struct AppError(anyhow::Error);
+
+// Tell axum how to convert `AppError` into a response.
+impl IntoResponse for AppError {
+    fn into_response(self) -> Response {
+        let desc = format!("Something went wrong: {}", self.0);
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            html::maud_page(html! {
+            p {
+               (desc)
+               a href="/" {"Go home"}
+            }}),
+        )
+            .into_response()
+    }
+}
+
+// This enables using `?` on functions that return `Result<_, anyhow::Error>` to turn them into
+// `Result<_, AppError>`. That way you don't need to do that manually.
+impl<E> From<E> for AppError
+where
+    E: Into<anyhow::Error>,
+{
+    fn from(err: E) -> Self {
+        Self(err.into())
+    }
 }
