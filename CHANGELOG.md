@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.6.2](https://github.com/philipcristiano/w2z/compare/v0.6.1...v0.6.2) (2024-07-01)
+
+
+### Bug Fixes
+
+* **deps:** update rust crate clap to v4.5.8 ([cb8c6bc](https://github.com/philipcristiano/w2z/commit/cb8c6bc91bfdaf2618e7474fed295b95f9bd14d1))
+* **deps:** update rust crate serde_json to v1.0.119 ([3c0bc55](https://github.com/philipcristiano/w2z/commit/3c0bc5569289eeef50cb4ab418b7f72de85789c1))
+* **deps:** update rust crate serde_json to v1.0.120 ([ce029a9](https://github.com/philipcristiano/w2z/commit/ce029a96b9d4eb6b668f1584b4d6def292257fe7))
+
 ## [0.6.1](https://github.com/philipcristiano/w2z/compare/v0.6.0...v0.6.1) (2024-06-25)
 
 
