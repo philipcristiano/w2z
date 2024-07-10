@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.6.2](https://github.com/philipcristiano/w2z/compare/v0.6.1...v0.6.2) (2024-07-10)
+
+
+### Bug Fixes
+
+* **deps:** update rust crate clap to v4.5.8 ([cb8c6bc](https://github.com/philipcristiano/w2z/commit/cb8c6bc91bfdaf2618e7474fed295b95f9bd14d1))
+* **deps:** update rust crate clap to v4.5.9 ([d653d15](https://github.com/philipcristiano/w2z/commit/d653d15b1c59051e1ae01752f507e8c51bdefbbd))
+* **deps:** update rust crate rust-embed to v8.5.0 ([586410e](https://github.com/philipcristiano/w2z/commit/586410ef69015c9d52da39eee434cc5283018e7f))
+* **deps:** update rust crate serde to v1.0.204 ([188085d](https://github.com/philipcristiano/w2z/commit/188085d93a858d00f21e26d7679f2c8b4212ee25))
+* **deps:** update rust crate serde_json to v1.0.119 ([3c0bc55](https://github.com/philipcristiano/w2z/commit/3c0bc5569289eeef50cb4ab418b7f72de85789c1))
+* **deps:** update rust crate serde_json to v1.0.120 ([ce029a9](https://github.com/philipcristiano/w2z/commit/ce029a96b9d4eb6b668f1584b4d6def292257fe7))
+* **deps:** update rust crate service_conventions to 0.0.17 ([4a1e476](https://github.com/philipcristiano/w2z/commit/4a1e476b2f669d477d7eb5150a7557e5041641c7))
+* **deps:** update rust crate tonic to 0.12.0 ([1534886](https://github.com/philipcristiano/w2z/commit/153488693c3cfa772c33077d0afe6b33bed816bd))
+* **deps:** update rust crate uuid to v1.10.0 ([d98714f](https://github.com/philipcristiano/w2z/commit/d98714f2244fe5cff337d8469094738201f1ecfe))
+
 ## [0.6.1](https://github.com/philipcristiano/w2z/compare/v0.6.0...v0.6.1) (2024-06-25)
 
 
