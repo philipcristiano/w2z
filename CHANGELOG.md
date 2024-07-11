@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.3](https://github.com/philipcristiano/w2z/compare/v0.6.2...v0.6.3) (2024-07-11)
+
+
+### Bug Fixes
+
+* Use common tracing ([dfe464c](https://github.com/philipcristiano/w2z/commit/dfe464ce7f010a40bd8bc4e4bc8fc6d1170acfce))
+
 ## [0.6.2](https://github.com/philipcristiano/w2z/compare/v0.6.1...v0.6.2) (2024-07-10)
 
 
