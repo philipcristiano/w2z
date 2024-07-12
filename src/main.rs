@@ -108,12 +108,17 @@ async fn main() {
         .nest_service("/static", serve_assets)
         .layer(CookieManagerLayer::new())
         .layer(service_conventions::tracing_http::trace_layer(tracing::Level::INFO))
+        .route("/_health", get(health))
         ;
 
     let addr: SocketAddr = args.bind_addr.parse().expect("Expected bind addr");
     tracing::info!("listening on {}", addr);
     let listener = tokio::net::TcpListener::bind(&addr).await.unwrap();
     axum::serve(listener, app).await.unwrap();
+}
+
+async fn health() -> Response {
+    "OK".into_response()
 }
 
 fn create_tera(templates: &HashMap<String, Template>) -> tera::Tera {
