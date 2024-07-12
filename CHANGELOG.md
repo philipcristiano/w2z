@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.4](https://github.com/philipcristiano/w2z/compare/v0.6.3...v0.6.4) (2024-07-12)
+
+
+### Bug Fixes
+
+* Add healthcheck ([2b841ed](https://github.com/philipcristiano/w2z/commit/2b841eda547cc088742586db0f299076b7b48c8d))
+
 ## [0.6.3](https://github.com/philipcristiano/w2z/compare/v0.6.2...v0.6.3) (2024-07-11)
 
 
