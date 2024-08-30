@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.1](https://github.com/philipcristiano/w2z/compare/v0.7.0...v0.7.1) (2024-08-30)
+
+
+### Bug Fixes
+
+* Default to main branch ([2a9a3f6](https://github.com/philipcristiano/w2z/commit/2a9a3f64afea104b85b1651e0217f8e979d4e1cf))
+
 ## [0.7.0](https://github.com/philipcristiano/w2z/compare/v0.6.4...v0.7.0) (2024-08-30)
 
 
