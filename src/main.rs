@@ -12,6 +12,7 @@ use std::collections::HashMap;
 use std::fs;
 use std::net::SocketAddr;
 
+use redacted::FullyRedacted;
 use tower_cookies::CookieManagerLayer;
 
 mod html;
@@ -40,12 +41,81 @@ struct Template {
 }
 
 #[derive(Clone, Debug, Deserialize)]
-struct GithubConfig {
+#[serde(untagged)]
+enum GithubConfig {
+    PersonalTokenConfig(GithubTokenConfig),
+    AppConfig(GithubAppConfig),
+}
+use octocrab::models::{InstallationRepositories, InstallationToken};
+use octocrab::params::apps::CreateInstallationAccessToken;
+use url::Url;
+impl GithubConfig {
+    async fn build_octocrab(&self) -> anyhow::Result<Octocrab> {
+        match self {
+            GithubConfig::PersonalTokenConfig(ptc) => Ok(Octocrab::builder()
+                .personal_token(ptc.token.clone())
+                .build()?),
+            GithubConfig::AppConfig(ac) => {
+                let k = jsonwebtoken::EncodingKey::from_rsa_pem(ac.app_key.as_bytes())?;
+                let o = Octocrab::builder().app(ac.app_id.into(), k).build()?;
+
+                let installations = o.apps().installations().send().await?.take_items();
+
+                let mut create_access_token = CreateInstallationAccessToken::default();
+                create_access_token.repositories = vec!["philipcristiano.com".to_string()];
+
+                // By design, tokens are not forwarded to urls that contain an authority. This means we need to
+                // extract the path from the url and use it to make the request.
+                let access_token_url =
+                    Url::parse(installations[0].access_tokens_url.as_ref().unwrap())?;
+
+                let access: InstallationToken = o
+                    .post(access_token_url.path(), Some(&create_access_token))
+                    .await?;
+
+                let octocrab = octocrab::OctocrabBuilder::new()
+                    .personal_token(access.token)
+                    .build();
+                Ok(octocrab?)
+            }
+        }
+    }
+
+    fn repository(&self) -> anyhow::Result<String> {
+        match self {
+            GithubConfig::PersonalTokenConfig(ptc) => Ok(ptc.repository.clone()),
+            GithubConfig::AppConfig(ac) => Ok("philipcristiano.com".to_string()),
+        }
+    }
+
+    fn owner(&self) -> anyhow::Result<String> {
+        match self {
+            GithubConfig::PersonalTokenConfig(ptc) => Ok(ptc.owner.clone()),
+            GithubConfig::AppConfig(ac) => Ok("philipcristiano".to_string()),
+        }
+    }
+    fn branch(&self) -> anyhow::Result<String> {
+        match self {
+            GithubConfig::PersonalTokenConfig(ptc) => Ok(ptc.branch.clone()),
+            GithubConfig::AppConfig(ac) => Ok("likes".to_string()),
+        }
+    }
+}
+
+#[derive(Clone, Debug, Deserialize)]
+struct GithubTokenConfig {
     token: String,
     owner: String,
     repository: String,
     branch: String,
 }
+
+#[derive(Clone, Debug, Deserialize)]
+struct GithubAppConfig {
+    app_id: u64,
+    app_key: FullyRedacted<String>,
+}
+
 #[derive(Clone, Debug, Deserialize)]
 struct AppConfig {
     auth: service_conventions::oidc::OIDCConfig,
@@ -107,9 +177,10 @@ async fn main() {
         .with_state(app_state.clone())
         .nest_service("/static", serve_assets)
         .layer(CookieManagerLayer::new())
-        .layer(service_conventions::tracing_http::trace_layer(tracing::Level::INFO))
-        .route("/_health", get(health))
-        ;
+        .layer(service_conventions::tracing_http::trace_layer(
+            tracing::Level::INFO,
+        ))
+        .route("/_health", get(health));
 
     let addr: SocketAddr = args.bind_addr.parse().expect("Expected bind addr");
     tracing::info!("listening on {}", addr);
@@ -292,13 +363,11 @@ async fn write_file(github: &GithubConfig, uf: &UploadableFile) -> anyhow::Resul
 
     //let new_contents = format!("+++\n+++\n{contents}");
 
-    let octocrab = Octocrab::builder()
-        .personal_token(github.token.clone())
-        .build()?;
+    let octocrab = github.build_octocrab().await?;
     octocrab
-        .repos(&github.owner, &github.repository)
+        .repos(github.owner()?, github.repository()?)
         .create_file(&uf.filename, "Create note", &uf.contents)
-        .branch(&github.branch)
+        .branch(github.branch()?)
         .commiter(CommitAuthor {
             name: "Octocat".to_string(),
             email: "octocat@github.com".to_string(),
@@ -315,11 +384,13 @@ async fn write_file(github: &GithubConfig, uf: &UploadableFile) -> anyhow::Resul
 }
 
 // Make our own error that wraps `anyhow::Error`.
+#[derive(Debug)]
 struct AppError(anyhow::Error);
 
 // Tell axum how to convert `AppError` into a response.
 impl IntoResponse for AppError {
     fn into_response(self) -> Response {
+        tracing::error!("HTTP Error {:?}", &self);
         let desc = format!("Something went wrong: {}", self.0);
         (
             StatusCode::INTERNAL_SERVER_ERROR,
