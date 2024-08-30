@@ -5,41 +5,7 @@ client_id = "w2z"
 client_secret = "[[CLIENT_SECRET]]"
 
 [github]
-token = "github_pat_..."
-owner = "repo_owner"
-repository = "repo_name"
-branch = "test"
-
-[templates]
-[templates.note]
-path = "content/notes/{{ now() | date(format=\"%Y/%Y-%m-%dT%H:%M:%SZ\")}}-{{uuid}}.md"
-body = """
-+++
-+++
-
-{{contents}}
-"""
-
-[templates.reply]
-path = "content/replies/{{ now() | date(format=\"%Y/%Y-%m-%dT%H:%M:%SZ\")}}-{{uuid}}.md"
-
-body = """
-+++
-[extra]
-in_reply_to = "{{in_reply_to}}"
-+++
-
-{{contents}}
-"""
-
-[templates.like]
-path = "content/likes/{{ now() | date(format=\"%Y/%Y-%m-%dT%H:%M:%SZ\")}}-{{uuid}}.md"
-
-body = """
-+++
-[extra]
-in_like_of = "{{in_like_of}}"
-+++
-
-{{contents}}
-"""
+app_id = [[GITHUB_APP_ID]]
+app_key = '''-----BEGIN RSA PRIVATE KEY-----
+...
+-----END RSA PRIVATE KEY-----'''
