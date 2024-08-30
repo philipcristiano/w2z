@@ -97,7 +97,7 @@ impl GithubConfig {
     fn branch(&self) -> anyhow::Result<String> {
         match self {
             GithubConfig::PersonalTokenConfig(ptc) => Ok(ptc.branch.clone()),
-            GithubConfig::AppConfig(ac) => Ok("likes".to_string()),
+            GithubConfig::AppConfig(ac) => Ok("main".to_string()),
         }
     }
 }
