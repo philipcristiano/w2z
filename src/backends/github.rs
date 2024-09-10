@@ -185,7 +185,7 @@ pub async fn axum_get_site(
     let path_pref = format!("/b/github/{}", &site.name);
     let field_prefix = "fields".to_string();
 
-    let body = maud::html! {
+    let body = crate::html::maud_page(maud::html! {
         @for template in config.templates.clone().into_iter() {
             p {
               h2 {(template.0)}
@@ -202,7 +202,7 @@ pub async fn axum_get_site(
             }
         }
 
-    };
+    });
     Ok(body.into_response())
 }
 
