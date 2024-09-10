@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.8.2](https://github.com/philipcristiano/w2z/compare/v0.8.1...v0.8.2) (2024-09-10)
+
+
+### Bug Fixes
+
+* Github: Add line breaks ([bc90859](https://github.com/philipcristiano/w2z/commit/bc9085925d3a8f7e42adda02178d8d09a3569fb9))
+* Path should use fields as context ([1faf6a6](https://github.com/philipcristiano/w2z/commit/1faf6a638189ab76f846502a9f9b66581601ef15))
+* Remove unnecessary body field ([1ff56b8](https://github.com/philipcristiano/w2z/commit/1ff56b84a37a5b467e3d40e414e93f275cb10cc6))
+
 ## [0.8.1](https://github.com/philipcristiano/w2z/compare/v0.8.0...v0.8.1) (2024-09-10)
 
 
