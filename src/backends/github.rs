@@ -213,11 +213,12 @@ pub struct SiteConfig {
 }
 
 impl SiteConfig {
-
     fn get_template(self, name: String) -> Option<templating::Template> {
-        self.templates.into_iter().find(|t| t.0 == name).map(|(_s, t)| t)
+        self.templates
+            .into_iter()
+            .find(|t| t.0 == name)
+            .map(|(_s, t)| t)
     }
-
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -254,9 +255,9 @@ pub async fn axum_post_template(
     tracing::info!("Post form data{:?}", post_data);
 
     let maybe_template = config.to_owned().get_template(path_params.template_name);
-    if let Some(template) = maybe_template{
-        let file_contents = template.as_toml( post_data)?;
-        let file_path = template.rendered_path()?;
+    if let Some(template) = maybe_template {
+        let file_contents = template.as_toml(post_data.clone())?;
+        let file_path = template.rendered_path(post_data)?;
         let uf = crate::UploadableFile {
             filename: file_path,
             contents: file_contents,
@@ -264,10 +265,8 @@ pub async fn axum_post_template(
         let _ = &app_state.backend.write_file(site, &uf).await?;
         Ok(Redirect::to("/").into_response())
     } else {
-        return Ok((http::status::StatusCode::NOT_FOUND, "").into_response())
-
+        return Ok((http::status::StatusCode::NOT_FOUND, "").into_response());
     }
-
 
     //let uf = render_like(&app_state.templates, form.in_like_of, text);
 }
