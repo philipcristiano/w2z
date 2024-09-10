@@ -2795,6 +2795,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "serde_qs"
+version = "0.13.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cd34f36fe4c5ba9654417139a9b3a20d2e1de6012ee678ad14d240c22c78d8d6"
+dependencies = [
+ "axum",
+ "futures",
+ "percent-encoding",
+ "serde",
+ "thiserror",
+ "tracing",
+]
+
+[[package]]
 name = "serde_spanned"
 version = "0.6.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3648,6 +3662,8 @@ dependencies = [
  "axum-embed",
  "chrono",
  "clap",
+ "http 1.1.0",
+ "indexmap 2.5.0",
  "jsonwebtoken",
  "maud",
  "octocrab",
@@ -3657,8 +3673,10 @@ dependencies = [
  "rust-embed",
  "serde",
  "serde_json",
+ "serde_qs",
  "service_conventions",
  "tera",
+ "thiserror",
  "tokio",
  "toml",
  "tonic",

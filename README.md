@@ -6,6 +6,8 @@ A form to write structured data into Github. Used for writing notes to static fi
 
 Relies on OIDC login (tested with kanidm).
 
+Requires a Github App for API permissions to Github.
+
 
 ```
 kanidm system oauth2 update-scope-map w2z <group> openid profile email
