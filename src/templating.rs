@@ -236,8 +236,9 @@ impl Template {
         Ok(t)
     }
 
-    pub fn rendered_path(&self) -> anyhow::Result<String> {
-        let context = tera::Context::new();
+    pub fn rendered_path(&self, data: Blob) -> anyhow::Result<String> {
+        let d = data.to_valid_structure(self.input_fields.clone(), DataContext::default())?;
+        let context = tera::Context::from_serialize(d)?;
         let r = self.renderer(&self.path)?;
         Ok(r.render("tmpl", &context)?)
     }
