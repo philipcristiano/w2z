@@ -192,6 +192,7 @@ pub async fn axum_get_site(
               form method="post" action={(&path_pref) "/new/" (template.0)} {
                 @for input_field in &template.1.input_fields {
                     (input_field.form_markup(&field_prefix))
+                    br {}
                 }
                 input type="submit" class="border" {}
               }
