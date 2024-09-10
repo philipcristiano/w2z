@@ -1,6 +1,6 @@
 [package]
 name = "w2z-service"
-version = "0.7.1"
+version = "0.8.0"
 edition = "2021"
 description = "Static Site CMS"
 license = "Apache-2.0"
