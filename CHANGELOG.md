@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.1](https://github.com/philipcristiano/w2z/compare/v0.8.0...v0.8.1) (2024-09-10)
+
+
+### Bug Fixes
+
+* Styling for Github page ([505c798](https://github.com/philipcristiano/w2z/commit/505c798f2c5548ab2024071fee6776d9a4db402e))
+
 ## [0.8.0](https://github.com/philipcristiano/w2z/compare/v0.7.1...v0.8.0) (2024-09-10)
 
 
