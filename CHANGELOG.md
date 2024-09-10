@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.0](https://github.com/philipcristiano/w2z/compare/v0.7.1...v0.8.0) (2024-09-10)
+
+
+### Features
+
+* Use repo file to template changes ([176953f](https://github.com/philipcristiano/w2z/commit/176953f30503010afe51c848453b54f4eb09f1f4))
+
 ## [0.7.1](https://github.com/philipcristiano/w2z/compare/v0.7.0...v0.7.1) (2024-08-30)
 
 
