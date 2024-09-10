@@ -217,7 +217,6 @@ impl FieldValue {
 pub struct Template {
     pub input_fields: Vec<InputField>,
     pub path: String,
-    pub body: String,
 }
 
 impl Template {
@@ -226,9 +225,6 @@ impl Template {
 
         if let Err(e) = self.renderer(&self.path) {
             m.push(format!("Could not parse path: {:?}", e));
-        }
-        if let Err(e) = self.renderer(&self.body) {
-            m.push(format!("Could not parse body: {:?}", e));
         }
 
         m
@@ -253,26 +249,6 @@ impl Template {
         let file_contents = format_toml_frontmatter_file(structured_data);
         Ok(file_contents)
     }
-}
-
-pub fn create_tera(templates: &HashMap<String, Template>) -> tera::Tera {
-    let mut t = tera::Tera::default();
-    let mut vec_ts: Vec<(String, String)> = Vec::new();
-
-    for (template_id, template_config) in templates.iter() {
-        let filename_name = format!("{}.filename", template_id);
-        let body_name = format!("{}.body", template_id);
-        tracing::debug!(
-            "Adding template: {}, {}",
-            filename_name,
-            template_config.path
-        );
-        tracing::debug!("Adding template: {}, {}", body_name, template_config.body);
-        vec_ts.push((filename_name, template_config.path.clone()));
-        vec_ts.push((body_name, template_config.body.clone()));
-    }
-    t.add_raw_templates(vec_ts).expect("Parse templates");
-    t
 }
 
 fn format_toml_frontmatter_file(mut data: indexmap::IndexMap<String, FieldValue>) -> String {
