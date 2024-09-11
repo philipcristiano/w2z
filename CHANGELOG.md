@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.0](https://github.com/philipcristiano/w2z/compare/v0.8.2...v0.9.0) (2024-09-11)
+
+
+### Features
+
+* Add list type for strings ([0bc842d](https://github.com/philipcristiano/w2z/commit/0bc842dd5f0c8bab3c09a89c8478125fe79d39e2))
+
 ## [0.8.2](https://github.com/philipcristiano/w2z/compare/v0.8.1...v0.8.2) (2024-09-10)
 
 
