@@ -188,13 +188,15 @@ pub async fn axum_get_site(
     let body = crate::html::maud_page(maud::html! {
         @for template in config.templates.clone().into_iter() {
             p {
-              h2 {(template.0)}
-              form method="post" action={(&path_pref) "/new/" (template.0)} {
-                @for input_field in &template.1.input_fields {
-                    (input_field.form_markup(&field_prefix))
-                    br {}
+              h2 script="on click toggle .hidden on next <div/>" {(template.0)}
+              div class="hidden" {
+                form method="post" action={(&path_pref) "/new/" (template.0)} {
+                  @for input_field in &template.1.input_fields {
+                      (input_field.form_markup(&field_prefix, templating::FormLabel::Yes))
+                      br {}
+                  }
+                  input type="submit" class="border" {}
                 }
-                input type="submit" class="border" {}
               }
               @for msg in &template.1.config_messages() {
                   p {(msg)}

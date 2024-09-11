@@ -11,11 +11,23 @@ pub enum InputField {
     Text { name: String },
     #[serde(alias = "datetime")]
     DateTime { name: String, default_now: bool },
+    #[serde(alias = "list")]
+    List {
+        name: String,
+        // list_of_type: InputField,
+        // Eventually support types, right now assume String type
+    },
     #[serde(alias = "object")]
     Object {
         name: String,
         input_fields: Vec<InputField>,
     },
+}
+
+#[derive(Clone, Debug, Copy, PartialEq, Eq)]
+pub enum FormLabel {
+    Yes,
+    No,
 }
 
 impl InputField {
@@ -24,31 +36,48 @@ impl InputField {
             InputField::Text { name } => name,
             InputField::String { name } => name,
             InputField::Object { name, .. } => name,
+            InputField::List { name, .. } => name,
             InputField::DateTime { name, .. } => name,
         }
     }
-    pub fn form_markup(&self, prefix: &String) -> maud::Markup {
+    pub fn form_markup(&self, prefix: &String, form_label: FormLabel) -> maud::Markup {
         match self {
             InputField::Text { name } => {
                 let field_name = format!("{}[{}]", prefix, name);
                 maud::html! {
-                    label for={(name)} { (name)}
-                    textarea white-space="pre-wrap" id={(&field_name)} class="border min-w-full" name={(&field_name)} {}
+                    @if form_label == FormLabel::Yes { label  { (name)} }
+                    textarea white-space="pre-wrap" class="border min-w-full" name={(&field_name)} {}
                 }
             }
             InputField::String { name } => {
                 let field_name = format!("{}[{}]", prefix, name);
                 maud::html! {
-                    label for={(&field_name)} { (&field_name)}
-                    input id={(&field_name)} class="border min-w-full" name={(&field_name)} {}
+                    @if form_label == FormLabel::Yes { label  { (field_name)} }
+                    input class="border min-w-full" name={(&field_name)} {}
+                }
+            }
+            InputField::List { name } => {
+                let list_item_field_name = format!("{}[{}]", prefix, name);
+                let item_template = InputField::String {
+                    name: "".to_string(),
+                };
+                maud::html! {
+                    span {"List items!"}
+                    br {}
+                    label { (&list_item_field_name)}
+                    button type="button" script="on click set N to the next <div/> then put N.cloneNode(true) after me" {"Add item"}
+                    div {
+                        (item_template.form_markup(&list_item_field_name, FormLabel::No))
+                        button type="button" script="on click remove me.parentElement" {"Remove"}
+                    }
                 }
             }
             InputField::Object { name, input_fields } => {
                 let field_name = format!("{}[{}]", prefix, name);
                 maud::html! {
-                    label for={(&field_name)} { (&field_name)}
+                    @if form_label == FormLabel::Yes { label  { (field_name)} }
                     @for if_field in input_fields {
-                        (if_field.form_markup(&field_name))
+                        (if_field.form_markup(&field_name, FormLabel::Yes))
 
                     }
                 }
@@ -69,6 +98,7 @@ impl InputField {
 #[serde(untagged)]
 pub enum PostTypes {
     String(String),
+    List(Vec<String>),
     Object(HashMap<String, PostTypes>),
 }
 
@@ -76,8 +106,22 @@ impl PostTypes {
     fn value_string(self) -> Result<String, TemplateError> {
         match self {
             PostTypes::String(s) => Ok(s),
+            PostTypes::List(l) => Err(TemplateError::FieldDataError(
+                "Cannot convert to list".to_string(),
+            )),
             PostTypes::Object(m) => Err(TemplateError::FieldDataError(
                 "Cannot convert to string".to_string(),
+            )),
+        }
+    }
+    fn value_strings(self) -> Result<Vec<String>, TemplateError> {
+        match self {
+            PostTypes::String(m) => Err(TemplateError::FieldDataError(
+                "Cannot convert to list".to_string(),
+            )),
+            PostTypes::List(l) => Ok(l),
+            PostTypes::Object(m) => Err(TemplateError::FieldDataError(
+                "Cannot convert to list".to_string(),
             )),
         }
     }
@@ -85,6 +129,9 @@ impl PostTypes {
     fn value_hm(self) -> Result<HashMap<String, PostTypes>, TemplateError> {
         match self {
             PostTypes::Object(m) => Ok(m),
+            PostTypes::List(l) => Err(TemplateError::FieldDataError(
+                "Cannot convert to list".to_string(),
+            )),
             PostTypes::String(s) => Err(TemplateError::FieldDataError(
                 "Cannot convert to hashmap".to_string(),
             )),
@@ -161,6 +208,8 @@ pub enum FieldValue {
     String(String),
     #[serde(alias = "text")]
     Text(String),
+    #[serde(alias = "list")]
+    List(Vec<String>),
     #[serde(alias = "object")]
     Object(indexmap::IndexMap<String, FieldValue>),
     #[serde(alias = "datetime")]
@@ -180,6 +229,7 @@ impl FieldValue {
                 let now = chrono::Utc::now();
                 Ok(FieldValue::DateTime(now))
             }
+            InputField::List { name } => Ok(FieldValue::List(value.value_strings()?)),
             InputField::Object { name, input_fields } => {
                 let d = Blob::hm_to_valid_structure(
                     value.value_hm()?,
@@ -207,6 +257,7 @@ impl FieldValue {
         match self {
             FieldValue::String(s) => s,
             FieldValue::Text(t) => t,
+            FieldValue::List(l) => "[list]".to_string(),
             FieldValue::Object(..) => "[object]".to_string(),
             FieldValue::DateTime(now) => now.to_string(),
         }
