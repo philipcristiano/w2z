@@ -192,7 +192,7 @@ pub async fn axum_get_site(
               div class="hidden" {
                 form method="post" action={(&path_pref) "/new/" (template.0)} {
                   @for input_field in &template.1.input_fields {
-                      (input_field.form_markup(&field_prefix, templating::FormLabel::Yes))
+                      (input_field.form_markup(&field_prefix, templating::FormInputOptions::default()))
                       br {}
                   }
                   input type="submit" class="border" {}
