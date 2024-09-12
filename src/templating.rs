@@ -25,9 +25,55 @@ pub enum InputField {
 }
 
 #[derive(Clone, Debug, Copy, PartialEq, Eq)]
+pub struct FormInputOptions {
+    pub label: FormLabel,
+    input_enable: InputEnable,
+}
+
+impl Default for FormInputOptions {
+    fn default() -> FormInputOptions {
+        FormInputOptions {
+            label: FormLabel::Yes,
+            input_enable: InputEnable::Enabled,
+        }
+    }
+}
+
+impl FormInputOptions {
+    fn disable_input(self) -> Self {
+        FormInputOptions {
+            input_enable: InputEnable::Disabled,
+            ..self
+        }
+    }
+
+    fn without_label(self) -> Self {
+        FormInputOptions {
+            label: FormLabel::No,
+            ..self
+        }
+    }
+}
+
+#[derive(Clone, Debug, Copy, PartialEq, Eq)]
 pub enum FormLabel {
     Yes,
     No,
+}
+
+#[derive(Clone, Debug, Copy, PartialEq, Eq)]
+pub enum InputEnable {
+    Enabled,
+    Disabled,
+}
+
+impl InputEnable {
+    fn markup(&self) -> &str {
+        match self {
+            InputEnable::Enabled => "false",
+            InputEnable::Disabled => "disabled",
+        }
+    }
 }
 
 impl InputField {
@@ -40,20 +86,26 @@ impl InputField {
             InputField::DateTime { name, .. } => name,
         }
     }
-    pub fn form_markup(&self, prefix: &String, form_label: FormLabel) -> maud::Markup {
+    pub fn form_markup(&self, prefix: &String, form_opts: FormInputOptions) -> maud::Markup {
         match self {
             InputField::Text { name } => {
                 let field_name = format!("{}[{}]", prefix, name);
                 maud::html! {
-                    @if form_label == FormLabel::Yes { label  { (name)} }
+                    @if form_opts.label == FormLabel::Yes { label  { (name)} }
                     textarea white-space="pre-wrap" class="border min-w-full" name={(&field_name)} {}
                 }
             }
             InputField::String { name } => {
                 let field_name = format!("{}[{}]", prefix, name);
                 maud::html! {
-                    @if form_label == FormLabel::Yes { label  { (field_name)} }
-                    input class="border min-w-full" name={(&field_name)} {}
+                    @if form_opts.label == FormLabel::Yes { label  { (field_name)} }
+                    @match form_opts.input_enable {
+                        InputEnable::Disabled =>{
+                            input class="border min-w-full" name={(&field_name)} disabled; {}}
+                        InputEnable::Enabled =>{
+                            input class="border min-w-full" name={(&field_name)} {}}
+
+                    }
                 }
             }
             InputField::List { name } => {
@@ -65,9 +117,9 @@ impl InputField {
                     span {"List items!"}
                     br {}
                     label { (&list_item_field_name)}
-                    button type="button" script="on click set N to the next <div/> then put N.cloneNode(true) after me" {"Add item"}
-                    div {
-                        (item_template.form_markup(&list_item_field_name, FormLabel::No))
+                    button type="button" script="on click set N to the next <div/> then set N to N.cloneNode(true) then remove .hidden from N then remove @disabled from the <input/> in N then put N after me" {"Add item"}
+                    div class="hidden" {
+                        (item_template.form_markup(&list_item_field_name, form_opts.without_label().disable_input()))
                         button type="button" script="on click remove me.parentElement" {"Remove"}
                     }
                 }
@@ -75,9 +127,9 @@ impl InputField {
             InputField::Object { name, input_fields } => {
                 let field_name = format!("{}[{}]", prefix, name);
                 maud::html! {
-                    @if form_label == FormLabel::Yes { label  { (field_name)} }
+                    @if form_opts.label == FormLabel::Yes { label  { (field_name)} }
                     @for if_field in input_fields {
-                        (if_field.form_markup(&field_name, FormLabel::Yes))
+                        (if_field.form_markup(&field_name, form_opts))
 
                     }
                 }
