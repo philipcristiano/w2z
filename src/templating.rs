@@ -249,6 +249,8 @@ use thiserror::Error;
 pub enum TemplateError {
     #[error("Field is missing")]
     MissingField { field: String },
+    #[error("Field is missing")]
+    EmptyField { field: String },
     #[error("Error with data in a field")]
     FieldDataError(String),
 }
@@ -275,8 +277,26 @@ impl FieldValue {
         context: DataContext,
     ) -> Result<FieldValue, TemplateError> {
         match input_field {
-            InputField::String { name } => Ok(FieldValue::String(value.value_string()?)),
-            InputField::Text { name } => Ok(FieldValue::Text(value.value_string()?)),
+            InputField::String { name } => {
+                let vs = value.value_string()?;
+                if vs.is_empty() {
+                    return Err(TemplateError::EmptyField {
+                        field: name.to_owned(),
+                    });
+                } else {
+                    Ok(FieldValue::String(vs))
+                }
+            }
+            InputField::Text { name } => {
+                let vs = value.value_string()?;
+                if vs.is_empty() {
+                    return Err(TemplateError::EmptyField {
+                        field: name.to_owned(),
+                    });
+                } else {
+                    Ok(FieldValue::Text(vs))
+                }
+            }
             InputField::DateTime { name, default_now } => {
                 let now = chrono::Utc::now();
                 Ok(FieldValue::DateTime(now))
@@ -416,6 +436,25 @@ title = "Hello World!"
     }
 
     #[test]
+    fn single_text_field_empty_of_data() {
+        let text_field = InputField::Text {
+            name: "title".to_string(),
+        };
+        let mut fields_hm = HashMap::new();
+        let val = PostTypes::String("".to_string());
+        fields_hm.insert("title".to_string(), val);
+        let data = Blob { fields: fields_hm };
+
+        let expected = TemplateError::EmptyField {
+            field: "title".to_string(),
+        };
+        let maybe_structured_data = data
+            .to_valid_structure(vec![text_field], DataContext::default())
+            .unwrap_err();
+        assert_eq!(maybe_structured_data, expected);
+    }
+
+    #[test]
     fn single_string_field() {
         let text_field = InputField::String {
             name: "title".to_string(),
@@ -438,6 +477,25 @@ title = "Hello World!"
         let file_contents = format_toml_frontmatter_file(structured_data);
 
         assert_eq!(file_contents, expected);
+    }
+
+    #[test]
+    fn single_string_field_empty_of_data() {
+        let field = InputField::String {
+            name: "title".to_string(),
+        };
+        let mut fields_hm = HashMap::new();
+        let val = PostTypes::String("".to_string());
+        fields_hm.insert("title".to_string(), val);
+        let data = Blob { fields: fields_hm };
+
+        let expected = TemplateError::EmptyField {
+            field: "title".to_string(),
+        };
+        let maybe_structured_data = data
+            .to_valid_structure(vec![field], DataContext::default())
+            .unwrap_err();
+        assert_eq!(maybe_structured_data, expected);
     }
 
     #[test]
