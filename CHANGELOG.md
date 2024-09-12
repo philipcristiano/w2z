@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.9.1](https://github.com/philipcristiano/w2z/compare/v0.9.0...v0.9.1) (2024-09-12)
+
+
+### Bug Fixes
+
+* Hide list fields and fix remove then add ([011db77](https://github.com/philipcristiano/w2z/commit/011db77d356e3a70b9c64429097c2bd0c4508ace))
+* Treat empty string as invalid ([25fe845](https://github.com/philipcristiano/w2z/commit/25fe8453a5881377364a4c7e134a057f96fdf2ee))
+
 ## [0.9.0](https://github.com/philipcristiano/w2z/compare/v0.8.2...v0.9.0) (2024-09-11)
 
 
