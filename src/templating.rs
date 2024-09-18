@@ -86,13 +86,18 @@ impl InputField {
             InputField::DateTime { name, .. } => name,
         }
     }
-    pub fn form_markup(&self, prefix: &String, form_opts: FormInputOptions) -> maud::Markup {
+    pub fn form_markup(
+        &self,
+        prefix: &String,
+        form_opts: FormInputOptions,
+        blob: &Blob,
+    ) -> maud::Markup {
         match self {
             InputField::Text { name } => {
                 let field_name = format!("{}[{}]", prefix, name);
                 maud::html! {
                     @if form_opts.label == FormLabel::Yes { label  { (name)} }
-                    textarea white-space="pre-wrap" class="border min-w-full" name={(&field_name)} {}
+                    textarea white-space="pre-wrap" class="border min-w-full" name={(&field_name)} value={(blob.form_field_or_empty_string(&name))} {}
                 }
             }
             InputField::String { name } => {
@@ -101,9 +106,9 @@ impl InputField {
                     @if form_opts.label == FormLabel::Yes { label  { (field_name)} }
                     @match form_opts.input_enable {
                         InputEnable::Disabled =>{
-                            input class="border min-w-full" name={(&field_name)} disabled; {}}
+                            input class="border min-w-full" name={(&field_name)} value={(blob.form_field_or_empty_string(&name))} disabled; {} }
                         InputEnable::Enabled =>{
-                            input class="border min-w-full" name={(&field_name)} {}}
+                            input class="border min-w-full" name={(&field_name)} value={( blob.form_field_or_empty_string(&name))} {}}
 
                     }
                 }
@@ -119,7 +124,7 @@ impl InputField {
                     label { (&list_item_field_name)}
                     button type="button" script="on click set N to the next <div/> then set N to N.cloneNode(true) then remove .hidden from N then remove @disabled from the <input/> in N then put N after me" {"Add item"}
                     div class="hidden" {
-                        (item_template.form_markup(&list_item_field_name, form_opts.without_label().disable_input()))
+                        (item_template.form_markup(&list_item_field_name, form_opts.without_label().disable_input(), blob))
                         button type="button" script="on click remove me.parentElement" {"Remove"}
                     }
                 }
@@ -129,7 +134,7 @@ impl InputField {
                 maud::html! {
                     @if form_opts.label == FormLabel::Yes { label  { (field_name)} }
                     @for if_field in input_fields {
-                        (if_field.form_markup(&field_name, form_opts))
+                        (if_field.form_markup(&field_name, form_opts, blob))
 
                     }
                 }
@@ -209,6 +214,28 @@ pub struct Blob {
 }
 
 impl Blob {
+    pub fn new() -> Blob {
+        Blob {
+            fields: HashMap::new(),
+        }
+    }
+
+    pub fn form_field(&self, field_name: &String) -> Result<Option<String>, TemplateError> {
+        if let Some(item) = self.fields.get(field_name) {
+            Ok(Some(item.clone().value_string()?.clone()))
+        } else {
+            Ok(None)
+        }
+    }
+
+    pub fn form_field_or_empty_string(&self, field_name: &String) -> String {
+        if let Ok(Some(s)) = self.form_field(field_name) {
+            s
+        } else {
+            "".to_string()
+        }
+    }
+
     fn to_valid_structure(
         self,
         input_fields: Vec<InputField>,

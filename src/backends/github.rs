@@ -195,7 +195,13 @@ pub async fn axum_get_site(
     let site: GithubSite = site_params.into();
     let config = &app_state.backend.get_site_config(&site).await?;
 
-    let body = render_page(&site, config.templates.clone(), vec![], None);
+    let body = render_page(
+        &site,
+        config.templates.clone(),
+        vec![],
+        None,
+        templating::Blob::new(),
+    );
     Ok(body.into_response())
 }
 
@@ -204,6 +210,7 @@ fn render_page(
     templates: indexmap::IndexMap<String, templating::Template>,
     messages: Vec<PageMessage>,
     open_template: Option<String>,
+    form_data: templating::Blob,
 ) -> maud::Markup {
     let path_pref = format!("/b/github/{}", &site.name);
     let field_prefix = "fields".to_string();
@@ -224,7 +231,7 @@ fn render_page(
               div class={(hidden)} {
                 form method="post" action={(&path_pref) "/new/" (template_name)} {
                   @for input_field in &template.input_fields {
-                      (input_field.form_markup(&field_prefix, templating::FormInputOptions::default()))
+                      (input_field.form_markup(&field_prefix, templating::FormInputOptions::default(), &form_data))
                       br {}
                   }
                   input type="submit" class="border" {}
@@ -293,7 +300,7 @@ pub async fn axum_post_template(
         let maybe_file_contents = template.as_toml(post_data.clone());
         return match maybe_file_contents {
             Ok(file_contents) => {
-                let file_path = template.rendered_path(post_data)?;
+                let file_path = template.rendered_path(post_data.clone())?;
                 let uf = crate::UploadableFile {
                     filename: file_path,
                     contents: file_contents,
@@ -303,10 +310,14 @@ pub async fn axum_post_template(
             }
             Err(e) => {
                 let m = vec![PageMessage { m: e.to_string() }];
-                Ok(
-                    render_page(&site, config.templates.clone(), m, Some(template_name))
-                        .into_response(),
+                Ok(render_page(
+                    &site,
+                    config.templates.clone(),
+                    m,
+                    Some(template_name),
+                    post_data,
                 )
+                .into_response())
             }
         };
     } else {
