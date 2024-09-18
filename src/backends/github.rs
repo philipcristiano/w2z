@@ -195,7 +195,7 @@ pub async fn axum_get_site(
     let site: GithubSite = site_params.into();
     let config = &app_state.backend.get_site_config(&site).await?;
 
-    let body = render_page(&site, config.templates.clone(), vec![]);
+    let body = render_page(&site, config.templates.clone(), vec![], None);
     Ok(body.into_response())
 }
 
@@ -203,6 +203,7 @@ fn render_page(
     site: &GithubSite,
     templates: indexmap::IndexMap<String, templating::Template>,
     messages: Vec<PageMessage>,
+    open_template: Option<String>,
 ) -> maud::Markup {
     let path_pref = format!("/b/github/{}", &site.name);
     let field_prefix = "fields".to_string();
@@ -212,19 +213,24 @@ fn render_page(
             (message)
         }
 
-        @for template in templates.clone().into_iter() {
+        @for (template_name, template) in templates.clone().into_iter() {
+            @let hidden = match &open_template {
+                Some(t) => {if *t == template_name { ""} else {"hidden"}}
+                _ => "hidden",
+
+            };
             p {
-              h2 script="on click toggle .hidden on next <div/>" {(template.0)}
-              div class="hidden" {
-                form method="post" action={(&path_pref) "/new/" (template.0)} {
-                  @for input_field in &template.1.input_fields {
+              h2 script="on click toggle .hidden on next <div/>" {(template_name)}
+              div class={(hidden)} {
+                form method="post" action={(&path_pref) "/new/" (template_name)} {
+                  @for input_field in &template.input_fields {
                       (input_field.form_markup(&field_prefix, templating::FormInputOptions::default()))
                       br {}
                   }
                   input type="submit" class="border" {}
                 }
               }
-              @for msg in &template.1.config_messages() {
+              @for msg in &template.config_messages() {
                   p {(msg)}
 
               }
@@ -280,8 +286,9 @@ pub async fn axum_post_template(
     let config = &app_state.backend.get_site_config(&site).await?;
     let post_data: templating::Blob = qs.deserialize_bytes(&form)?;
     tracing::info!("Post form data{:?}", post_data);
+    let template_name = path_params.template_name;
 
-    let maybe_template = config.to_owned().get_template(path_params.template_name);
+    let maybe_template = config.to_owned().get_template(template_name.clone());
     if let Some(template) = maybe_template {
         let maybe_file_contents = template.as_toml(post_data.clone());
         return match maybe_file_contents {
@@ -296,7 +303,10 @@ pub async fn axum_post_template(
             }
             Err(e) => {
                 let m = vec![PageMessage { m: e.to_string() }];
-                Ok(render_page(&site, config.templates.clone(), m).into_response())
+                Ok(
+                    render_page(&site, config.templates.clone(), m, Some(template_name))
+                        .into_response(),
+                )
             }
         };
     } else {
