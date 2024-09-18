@@ -97,7 +97,7 @@ impl InputField {
                 let field_name = format!("{}[{}]", prefix, name);
                 maud::html! {
                     @if form_opts.label == FormLabel::Yes { label  { (name)} }
-                    textarea white-space="pre-wrap" class="border min-w-full" name={(&field_name)} value={(blob.form_field_or_empty_string(&name))} {}
+                    textarea white-space="pre-wrap" class="border min-w-full" name={(&field_name)} {(blob.form_field_or_empty_string(&name))}
                 }
             }
             InputField::String { name } => {
