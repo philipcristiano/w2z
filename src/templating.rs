@@ -247,9 +247,9 @@ impl Blob {
 use thiserror::Error;
 #[derive(Error, Debug, PartialEq, Eq)]
 pub enum TemplateError {
-    #[error("Field is missing")]
+    #[error("Field is missing: {field}")]
     MissingField { field: String },
-    #[error("Field is missing")]
+    #[error("Field is missing: {field}")]
     EmptyField { field: String },
     #[error("Error with data in a field")]
     FieldDataError(String),
@@ -349,7 +349,6 @@ impl Template {
         if let Err(e) = self.renderer(&self.path) {
             m.push(format!("Could not parse path: {:?}", e));
         }
-
         m
     }
 
@@ -366,7 +365,7 @@ impl Template {
         Ok(r.render("tmpl", &context)?)
     }
 
-    pub fn as_toml(&self, data: Blob) -> anyhow::Result<String> {
+    pub fn as_toml(&self, data: Blob) -> Result<String, TemplateError> {
         let structured_data =
             data.to_valid_structure(self.input_fields.clone(), DataContext::default())?;
 

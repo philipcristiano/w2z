@@ -169,6 +169,18 @@ use axum::{
     Form, Router,
 };
 
+struct PageMessage {
+    m: String,
+}
+
+impl maud::Render for PageMessage {
+    fn render(&self) -> maud::Markup {
+        maud::html! {
+            p { (self.m)}
+        }
+    }
+}
+
 #[derive(Clone, Debug, Deserialize)]
 pub struct SiteParams {
     owner: String,
@@ -182,11 +194,25 @@ pub async fn axum_get_site(
 ) -> Result<Response, AppError> {
     let site: GithubSite = site_params.into();
     let config = &app_state.backend.get_site_config(&site).await?;
+
+    let body = render_page(&site, config.templates.clone(), vec![]);
+    Ok(body.into_response())
+}
+
+fn render_page(
+    site: &GithubSite,
+    templates: indexmap::IndexMap<String, templating::Template>,
+    messages: Vec<PageMessage>,
+) -> maud::Markup {
     let path_pref = format!("/b/github/{}", &site.name);
     let field_prefix = "fields".to_string();
 
-    let body = crate::html::maud_page(maud::html! {
-        @for template in config.templates.clone().into_iter() {
+    crate::html::maud_page(maud::html! {
+        @for message in messages{
+            (message)
+        }
+
+        @for template in templates.clone().into_iter() {
             p {
               h2 script="on click toggle .hidden on next <div/>" {(template.0)}
               div class="hidden" {
@@ -205,8 +231,7 @@ pub async fn axum_get_site(
             }
         }
 
-    });
-    Ok(body.into_response())
+    })
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -258,14 +283,22 @@ pub async fn axum_post_template(
 
     let maybe_template = config.to_owned().get_template(path_params.template_name);
     if let Some(template) = maybe_template {
-        let file_contents = template.as_toml(post_data.clone())?;
-        let file_path = template.rendered_path(post_data)?;
-        let uf = crate::UploadableFile {
-            filename: file_path,
-            contents: file_contents,
+        let maybe_file_contents = template.as_toml(post_data.clone());
+        return match maybe_file_contents {
+            Ok(file_contents) => {
+                let file_path = template.rendered_path(post_data)?;
+                let uf = crate::UploadableFile {
+                    filename: file_path,
+                    contents: file_contents,
+                };
+                let _ = &app_state.backend.write_file(site, &uf).await?;
+                Ok(Redirect::to("/").into_response())
+            }
+            Err(e) => {
+                let m = vec![PageMessage { m: e.to_string() }];
+                Ok(render_page(&site, config.templates.clone(), m).into_response())
+            }
         };
-        let _ = &app_state.backend.write_file(site, &uf).await?;
-        Ok(Redirect::to("/").into_response())
     } else {
         return Ok((http::status::StatusCode::NOT_FOUND, "").into_response());
     }
