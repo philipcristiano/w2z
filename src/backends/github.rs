@@ -169,6 +169,18 @@ use axum::{
     Form, Router,
 };
 
+struct PageMessage {
+    m: String,
+}
+
+impl maud::Render for PageMessage {
+    fn render(&self) -> maud::Markup {
+        maud::html! {
+            p { (self.m)}
+        }
+    }
+}
+
 #[derive(Clone, Debug, Deserialize)]
 pub struct SiteParams {
     owner: String,
@@ -182,31 +194,57 @@ pub async fn axum_get_site(
 ) -> Result<Response, AppError> {
     let site: GithubSite = site_params.into();
     let config = &app_state.backend.get_site_config(&site).await?;
+
+    let body = render_page(
+        &site,
+        config.templates.clone(),
+        vec![],
+        None,
+        templating::Blob::new(),
+    );
+    Ok(body.into_response())
+}
+
+fn render_page(
+    site: &GithubSite,
+    templates: indexmap::IndexMap<String, templating::Template>,
+    messages: Vec<PageMessage>,
+    open_template: Option<String>,
+    form_data: templating::Blob,
+) -> maud::Markup {
     let path_pref = format!("/b/github/{}", &site.name);
     let field_prefix = "fields".to_string();
 
-    let body = crate::html::maud_page(maud::html! {
-        @for template in config.templates.clone().into_iter() {
+    crate::html::maud_page(maud::html! {
+        @for message in messages{
+            (message)
+        }
+
+        @for (template_name, template) in templates.clone().into_iter() {
+            @let hidden = match &open_template {
+                Some(t) => {if *t == template_name { ""} else {"hidden"}}
+                _ => "hidden",
+
+            };
             p {
-              h2 script="on click toggle .hidden on next <div/>" {(template.0)}
-              div class="hidden" {
-                form method="post" action={(&path_pref) "/new/" (template.0)} {
-                  @for input_field in &template.1.input_fields {
-                      (input_field.form_markup(&field_prefix, templating::FormInputOptions::default()))
+              h2 script="on click toggle .hidden on next <div/>" {(template_name)}
+              div class={(hidden)} {
+                form method="post" action={(&path_pref) "/new/" (template_name)} {
+                  @for input_field in &template.input_fields {
+                      (input_field.form_markup(&field_prefix, templating::FormInputOptions::default(), &form_data))
                       br {}
                   }
                   input type="submit" class="border" {}
                 }
               }
-              @for msg in &template.1.config_messages() {
+              @for msg in &template.config_messages() {
                   p {(msg)}
 
               }
             }
         }
 
-    });
-    Ok(body.into_response())
+    })
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -255,37 +293,34 @@ pub async fn axum_post_template(
     let config = &app_state.backend.get_site_config(&site).await?;
     let post_data: templating::Blob = qs.deserialize_bytes(&form)?;
     tracing::info!("Post form data{:?}", post_data);
+    let template_name = path_params.template_name;
 
-    let maybe_template = config.to_owned().get_template(path_params.template_name);
+    let maybe_template = config.to_owned().get_template(template_name.clone());
     if let Some(template) = maybe_template {
-        let file_contents = template.as_toml(post_data.clone())?;
-        let file_path = template.rendered_path(post_data)?;
-        let uf = crate::UploadableFile {
-            filename: file_path,
-            contents: file_contents,
+        let maybe_file_contents = template.as_toml(post_data.clone());
+        return match maybe_file_contents {
+            Ok(file_contents) => {
+                let file_path = template.rendered_path(post_data.clone())?;
+                let uf = crate::UploadableFile {
+                    filename: file_path,
+                    contents: file_contents,
+                };
+                let _ = &app_state.backend.write_file(site, &uf).await?;
+                Ok(Redirect::to("/").into_response())
+            }
+            Err(e) => {
+                let m = vec![PageMessage { m: e.to_string() }];
+                Ok(render_page(
+                    &site,
+                    config.templates.clone(),
+                    m,
+                    Some(template_name),
+                    post_data,
+                )
+                .into_response())
+            }
         };
-        let _ = &app_state.backend.write_file(site, &uf).await?;
-        Ok(Redirect::to("/").into_response())
     } else {
         return Ok((http::status::StatusCode::NOT_FOUND, "").into_response());
-    }
-
-    //let uf = render_like(&app_state.templates, form.in_like_of, text);
-}
-
-fn render_like(t: &tera::Tera, in_reply_to: String, form_text: String) -> UploadableFile {
-    let mut context = tera::Context::new();
-    context.insert("contents", &form_text);
-    context.insert("in_like_of", &in_reply_to);
-    context.insert("uuid", &uuid::Uuid::new_v4().to_string());
-
-    for name in t.get_template_names() {
-        tracing::info!("Template: {:?}", name);
-    }
-    let path = t.render("like.filename", &context);
-    let body = t.render("like.body", &context);
-    UploadableFile {
-        filename: path.expect("could not render"),
-        contents: body.expect("could not render"),
     }
 }
