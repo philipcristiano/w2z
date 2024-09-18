@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.9.2](https://github.com/philipcristiano/w2z/compare/v0.9.1...v0.9.2) (2024-09-18)
+
+
+### Bug Fixes
+
+* Add submitted string value back to inputs ([5bf0e0d](https://github.com/philipcristiano/w2z/commit/5bf0e0d78d93bf59849f105bc1e5a9157331c9d6))
+* Include textarea contents ([f50d520](https://github.com/philipcristiano/w2z/commit/f50d5203512439c6974210cecd358c42b3abe881))
+* Keep template open if error ([eb155e3](https://github.com/philipcristiano/w2z/commit/eb155e32f4c04ef58e59c1acec77e3c72c7a6b76))
+* Load page on error ([be0d822](https://github.com/philipcristiano/w2z/commit/be0d822235723c3fdf80fe9e2037426f7461d638))
+
 ## [0.9.1](https://github.com/philipcristiano/w2z/compare/v0.9.0...v0.9.1) (2024-09-12)
 
 
