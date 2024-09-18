@@ -302,23 +302,4 @@ pub async fn axum_post_template(
     } else {
         return Ok((http::status::StatusCode::NOT_FOUND, "").into_response());
     }
-
-    //let uf = render_like(&app_state.templates, form.in_like_of, text);
-}
-
-fn render_like(t: &tera::Tera, in_reply_to: String, form_text: String) -> UploadableFile {
-    let mut context = tera::Context::new();
-    context.insert("contents", &form_text);
-    context.insert("in_like_of", &in_reply_to);
-    context.insert("uuid", &uuid::Uuid::new_v4().to_string());
-
-    for name in t.get_template_names() {
-        tracing::info!("Template: {:?}", name);
-    }
-    let path = t.render("like.filename", &context);
-    let body = t.render("like.body", &context);
-    UploadableFile {
-        filename: path.expect("could not render"),
-        contents: body.expect("could not render"),
-    }
 }
