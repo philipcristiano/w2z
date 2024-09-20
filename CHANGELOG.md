@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.9.3](https://github.com/philipcristiano/w2z/compare/v0.9.2...v0.9.3) (2024-09-20)
+
+
+### Bug Fixes
+
+* **deps:** update rust crate service_conventions to 0.0.21 ([e3432a6](https://github.com/philipcristiano/w2z/commit/e3432a66469cffecb0f93a47234f402f1c91820c))
+* **deps:** update rust crate tower-http to 0.6.0 ([60e2792](https://github.com/philipcristiano/w2z/commit/60e27929b318d69039a7fdf67abd56bc3bb93990))
+
 ## [0.9.2](https://github.com/philipcristiano/w2z/compare/v0.9.1...v0.9.2) (2024-09-18)
 
 
