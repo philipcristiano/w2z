@@ -253,7 +253,7 @@ pub struct SiteConfig {
 }
 
 impl SiteConfig {
-    fn get_template(self, name: String) -> Option<templating::Template> {
+    pub fn get_template(self, name: String) -> Option<templating::Template> {
         self.templates
             .into_iter()
             .find(|t| t.0 == name)

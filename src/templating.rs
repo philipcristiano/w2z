@@ -2,7 +2,25 @@ use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq)]
+pub struct InputFieldRequired(bool);
+//impl TryFrom<bool> for InputFieldRequired {
+//    type Error = &'static str;
+//    fn try_from(b: bool) -> Result<InputFieldRequired, Self::Error> {
+//        match b {
+//            true => Ok(InputFieldRequired::Required),
+//            false => Ok(InputFieldRequired::Optional),
+//        }
+//    }
+//}
+
+impl Default for InputFieldRequired {
+    fn default() -> Self {
+        InputFieldRequired(true)
+    }
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq)]
 #[serde(tag = "type")]
 pub enum InputField {
     #[serde(alias = "string")]
@@ -21,6 +39,8 @@ pub enum InputField {
     Object {
         name: String,
         input_fields: Vec<InputField>,
+        #[serde(default)]
+        required: InputFieldRequired,
     },
 }
 
@@ -86,6 +106,16 @@ impl InputField {
             InputField::DateTime { name, .. } => name,
         }
     }
+
+    pub fn is_required(&self) -> bool {
+        match self {
+            InputField::Text { .. } => InputFieldRequired(true).0,
+            InputField::String { .. } => InputFieldRequired(true).0,
+            InputField::Object { required, .. } => required.0,
+            InputField::List { name, .. } => InputFieldRequired(true).0,
+            InputField::DateTime { name, .. } => InputFieldRequired(true).0,
+        }
+    }
     pub fn form_markup(
         &self,
         prefix: &String,
@@ -129,7 +159,9 @@ impl InputField {
                     }
                 }
             }
-            InputField::Object { name, input_fields } => {
+            InputField::Object {
+                name, input_fields, ..
+            } => {
                 let field_name = format!("{}[{}]", prefix, name);
                 maud::html! {
                     @if form_opts.label == FormLabel::Yes { label  { (field_name)} }
@@ -260,9 +292,11 @@ impl Blob {
                 if let Some(default_fv) = FieldValue::try_new_default(&input_field, context) {
                     im.insert(input_field.name().clone(), default_fv);
                 } else {
-                    return Err(TemplateError::MissingField {
-                        field: input_field.name().to_owned(),
-                    });
+                    if input_field.is_required() {
+                        return Err(TemplateError::MissingField {
+                            field: input_field.name().to_owned(),
+                        });
+                    }
                 }
                 // return error
             }
@@ -329,7 +363,9 @@ impl FieldValue {
                 Ok(FieldValue::DateTime(now))
             }
             InputField::List { name } => Ok(FieldValue::List(value.value_strings()?)),
-            InputField::Object { name, input_fields } => {
+            InputField::Object {
+                name, input_fields, ..
+            } => {
                 let d = Blob::hm_to_valid_structure(
                     value.value_hm()?,
                     input_fields.to_owned(),
@@ -415,6 +451,38 @@ fn format_toml_frontmatter_file(mut data: indexmap::IndexMap<String, FieldValue>
     }
 }
 
+#[cfg(test)]
+#[derive(Clone, Debug, Deserialize)]
+pub struct TestConfig {
+    templates: indexmap::IndexMap<String, Template>,
+}
+
+#[cfg(test)]
+mod test_template_load {
+
+    use super::*;
+
+    #[test]
+    fn test_optional_object() {
+        let cfg = r#"
+[templates]
+[templates.note]
+input_fields = [{name = "object_name", type = "object", input_fields = [], required=false},
+]
+path = "/index.md"
+"#;
+        let config: crate::backends::github::SiteConfig =
+            toml::from_str(cfg).expect("Parsed Config");
+        let expected_obj = InputField::Object {
+            name: "object_name".to_string(),
+            input_fields: vec![],
+            required: InputFieldRequired(false),
+        };
+        let t = config.get_template("note".to_string()).expect("Has note");
+
+        assert_eq!(t.input_fields.first().expect("has one"), &expected_obj);
+    }
+}
 #[cfg(test)]
 mod test_structure {
 
@@ -643,6 +711,7 @@ Text body!
         let obj_field = InputField::Object {
             name: "extra".to_string(),
             input_fields: vec![text_field],
+            required: InputFieldRequired(true),
         };
         let val = PostTypes::String("Hello extra World!".to_string());
 
@@ -657,6 +726,37 @@ Text body!
         let expected = r#"+++
 [extra]
 title = "Hello extra World!"
++++
+"#;
+
+        let structured_data = data
+            .to_valid_structure(vec![obj_field], DataContext::default())
+            .unwrap();
+
+        let file_contents = format_toml_frontmatter_file(structured_data);
+
+        assert_eq!(file_contents, expected);
+    }
+
+    #[test]
+    fn single_optional_object_string_field() {
+        let text_field = InputField::String {
+            name: "title".to_string(),
+        };
+        let obj_field = InputField::Object {
+            name: "extra".to_string(),
+            input_fields: vec![text_field],
+            required: InputFieldRequired(false),
+        };
+        let val = PostTypes::String("Hello extra World!".to_string());
+
+        let mut fields_hm = HashMap::new();
+        fields_hm.insert("title".to_string(), val);
+        let obj_hm = HashMap::new();
+
+        let data = Blob { fields: obj_hm };
+
+        let expected = r#"+++
 +++
 "#;
 
