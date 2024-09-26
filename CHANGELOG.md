@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.10.0](https://github.com/philipcristiano/w2z/compare/v0.9.3...v0.10.0) (2024-09-26)
+
+
+### Features
+
+* Start optional fields ([b3b974f](https://github.com/philipcristiano/w2z/commit/b3b974f60636e2b8d9d66e6b943af27a7a41f1bb))
+
+
+### Bug Fixes
+
+* Allow empty lists by default ([a21007e](https://github.com/philipcristiano/w2z/commit/a21007ee5dda62198b8fe573d72a2ce9f65a9bfb))
+* **deps:** update rust crate axum to v0.7.6 ([48e67e0](https://github.com/philipcristiano/w2z/commit/48e67e0ae1c539c283b180cd0e102e5b8fa1c8fa))
+* **deps:** update rust crate clap to v4.5.18 ([bd5c4de](https://github.com/philipcristiano/w2z/commit/bd5c4de50f6070729a362d53d9e1f290dfa9c0d5))
+* **deps:** update rust crate octocrab to 0.40.0 ([5e3e4ba](https://github.com/philipcristiano/w2z/commit/5e3e4ba1f29f42624c3f5f8d8d083b6a2100eb72))
+* **deps:** update rust crate thiserror to v1.0.64 ([13ec028](https://github.com/philipcristiano/w2z/commit/13ec028e264dc99314de163284f5a097056f57fc))
+* **deps:** update rust crate tower-http to v0.6.1 ([23fca2e](https://github.com/philipcristiano/w2z/commit/23fca2ed23df1a54f44ad9c480966da9f18a2061))
+
 ## [0.9.3](https://github.com/philipcristiano/w2z/compare/v0.9.2...v0.9.3) (2024-09-20)
 
 
