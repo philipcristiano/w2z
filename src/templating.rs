@@ -348,6 +348,7 @@ impl FieldValue {
                     return None;
                 }
             }
+            InputField::List { name } => Some(FieldValue::List(vec![])),
             _ => None,
         }
     }
@@ -522,6 +523,52 @@ title = "Hello World!"
             .to_valid_structure(vec![field], DataContext::default())
             .unwrap_err();
         assert_eq!(maybe_structured_data, expected);
+    }
+
+    #[test]
+    fn multiple_strings() {
+        let field = InputField::List {
+            name: "items".to_string(),
+        };
+        let mut fields_hm = HashMap::new();
+        let val = PostTypes::List(vec!["1".to_string(), "2".to_string()]);
+        fields_hm.insert("items".to_string(), val);
+        let data = Blob { fields: fields_hm };
+
+        let expected = r#"+++
+items = ["1", "2"]
++++
+"#;
+
+        let structured_data = data
+            .to_valid_structure(vec![field], DataContext::default())
+            .unwrap();
+
+        let file_contents = format_toml_frontmatter_file(structured_data);
+
+        assert_eq!(file_contents, expected);
+    }
+
+    #[test]
+    fn empty_list_of_strings_() {
+        let field = InputField::List {
+            name: "items".to_string(),
+        };
+        let fields_hm = HashMap::new();
+        let data = Blob { fields: fields_hm };
+
+        let expected = r#"+++
+items = []
++++
+"#;
+
+        let structured_data = data
+            .to_valid_structure(vec![field], DataContext::default())
+            .unwrap();
+
+        let file_contents = format_toml_frontmatter_file(structured_data);
+
+        assert_eq!(file_contents, expected);
     }
 
     #[test]
