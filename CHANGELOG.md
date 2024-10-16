@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.10.1](https://github.com/philipcristiano/w2z/compare/v0.10.0...v0.10.1) (2024-10-16)
+
+
+### Bug Fixes
+
+* **deps:** update rust crate axum to v0.7.7 ([d568916](https://github.com/philipcristiano/w2z/commit/d568916558963a191dbdca929074832b59512d12))
+* **deps:** update rust crate clap to v4.5.19 ([a70c1b7](https://github.com/philipcristiano/w2z/commit/a70c1b7c623ded9f8751f0933a49bc2eb59ee0fc))
+* **deps:** update rust crate clap to v4.5.20 ([a953203](https://github.com/philipcristiano/w2z/commit/a9532033a67b7e9488fd48edbabed4a02d1f8414))
+* **deps:** update rust crate indexmap to v2.6.0 ([3f9ad30](https://github.com/philipcristiano/w2z/commit/3f9ad30b596be13af576fd0e35c3fb0e5f66cafd))
+* **deps:** update rust crate octocrab to 0.41.0 ([c45a5e6](https://github.com/philipcristiano/w2z/commit/c45a5e69e221d8929149541a74b2f2be1d0988c0))
+* **deps:** update rust crate octocrab to v0.41.1 ([799fa16](https://github.com/philipcristiano/w2z/commit/799fa162ae3a0b37fb8c1f83d28b982f864fc03d))
+* **deps:** update rust crate octocrab to v0.41.2 ([574af0a](https://github.com/philipcristiano/w2z/commit/574af0a3a647978eadb2c53371dd2798a74ec992))
+* **deps:** update rust crate once_cell to v1.20.1 ([6b885a8](https://github.com/philipcristiano/w2z/commit/6b885a8f718442cd8a3f8096c8f81bf77d5b2890))
+* **deps:** update rust crate once_cell to v1.20.2 ([e2fb6d2](https://github.com/philipcristiano/w2z/commit/e2fb6d2754eec7c2f14caf36301e9bd829d2548a))
+* **deps:** update rust crate service_conventions to 0.0.22 ([dc7127f](https://github.com/philipcristiano/w2z/commit/dc7127f66672d9380ca7b3a40b7c779f2fa0ed96))
+* **deps:** update rust crate service_conventions to 0.0.23 ([45be289](https://github.com/philipcristiano/w2z/commit/45be289b5fc9d29c85a6a3237c6549a7d07b8f3f))
+* **deps:** update rust crate tokio to v1.40.0 ([87379c3](https://github.com/philipcristiano/w2z/commit/87379c381aa156f188860f8348f1aaa18397ccd5))
+* **deps:** update rust crate tonic to v0.12.3 ([09293fe](https://github.com/philipcristiano/w2z/commit/09293fedca4ac5c78a614a42bfbf86166f81999f))
+* **deps:** update rust crate uuid to v1.11.0 ([f7b5099](https://github.com/philipcristiano/w2z/commit/f7b5099d2fdff192aec463bc1a6dec799566ab46))
+
 ## [0.10.0](https://github.com/philipcristiano/w2z/compare/v0.9.3...v0.10.0) (2024-09-26)
 
 
