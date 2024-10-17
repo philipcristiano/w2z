@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.2](https://github.com/philipcristiano/w2z/compare/v0.10.1...v0.10.2) (2024-10-17)
+
+
+### Bug Fixes
+
+* **deps:** update rust crate serde_json to v1.0.129 ([1b3547a](https://github.com/philipcristiano/w2z/commit/1b3547ac912e378269f76b30855b857995824fe5))
+
 ## [0.10.1](https://github.com/philipcristiano/w2z/compare/v0.10.0...v0.10.1) (2024-10-16)
 
 
