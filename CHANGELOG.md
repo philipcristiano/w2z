@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.10.2](https://github.com/philipcristiano/w2z/compare/v0.10.1...v0.10.2) (2024-10-23)
+
+
+### Bug Fixes
+
+* **deps:** update rust crate anyhow to v1.0.90 ([0c50758](https://github.com/philipcristiano/w2z/commit/0c50758cdd56e13d8839261bd390237510fc2728))
+* **deps:** update rust crate anyhow to v1.0.91 ([60abe7e](https://github.com/philipcristiano/w2z/commit/60abe7e58786662560b74ff0fc366aa423cd965f))
+* **deps:** update rust crate serde to v1.0.211 ([412f899](https://github.com/philipcristiano/w2z/commit/412f8994c3790d7957dbb03344ab427846d42c02))
+* **deps:** update rust crate serde to v1.0.213 ([e89220d](https://github.com/philipcristiano/w2z/commit/e89220d22c671f68c324939de2ffcb052f9f3433))
+* **deps:** update rust crate serde_json to v1.0.129 ([1b3547a](https://github.com/philipcristiano/w2z/commit/1b3547ac912e378269f76b30855b857995824fe5))
+* **deps:** update rust crate serde_json to v1.0.130 ([2f28c54](https://github.com/philipcristiano/w2z/commit/2f28c54427c6d88601f36015c44d550f308713a9))
+* **deps:** update rust crate serde_json to v1.0.131 ([f9399a1](https://github.com/philipcristiano/w2z/commit/f9399a1bf6c2aacc9e86fe241af1f205f7e8a82a))
+* **deps:** update rust crate serde_json to v1.0.132 ([3cc5628](https://github.com/philipcristiano/w2z/commit/3cc5628cc66755026820c97de0ced18c30e13f01))
+* **deps:** update rust crate thiserror to v1.0.65 ([7ed561b](https://github.com/philipcristiano/w2z/commit/7ed561bacb56a6bb1eb2e99fecd0074ffe53964f))
+* **deps:** update rust crate tokio to v1.41.0 ([166cae7](https://github.com/philipcristiano/w2z/commit/166cae70335c73c18f7e68781500c9c932d928eb))
+
 ## [0.10.1](https://github.com/philipcristiano/w2z/compare/v0.10.0...v0.10.1) (2024-10-16)
 
 
