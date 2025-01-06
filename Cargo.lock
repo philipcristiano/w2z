@@ -174,9 +174,9 @@ dependencies = [
 
 [[package]]
 name = "async-trait"
-version = "0.1.83"
+version = "0.1.84"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "721cae7de5c34fbb2acd27e21e6d2cf7b886dce0c27388d46c4e6c47ea4318dd"
+checksum = "1b1244b10dcd56c92219da4e14caa97e312079e185f04ba3eea25061561dc0a0"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -202,7 +202,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "edca88bc138befd0323b20752846e6587272d3b03b0343c8ea28a6f819e6e71f"
 dependencies = [
  "async-trait",
- "axum-core",
+ "axum-core 0.4.5",
  "axum-macros",
  "bytes",
  "futures-util",
@@ -252,12 +252,31 @@ dependencies = [
 ]
 
 [[package]]
+name = "axum-core"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "df1362f362fd16024ae199c1970ce98f9661bf5ef94b9808fee734bc3698b733"
+dependencies = [
+ "bytes",
+ "futures-util",
+ "http 1.2.0",
+ "http-body 1.0.1",
+ "http-body-util",
+ "mime",
+ "pin-project-lite",
+ "rustversion",
+ "sync_wrapper 1.0.2",
+ "tower-layer",
+ "tower-service",
+]
+
+[[package]]
 name = "axum-embed"
 version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "077959a7f8cf438676af90b483304528eb7e16eadadb7f44e9ada4f9dceb9e62"
 dependencies = [
- "axum-core",
+ "axum-core 0.4.5",
  "chrono",
  "http 1.2.0",
  "mime_guess",
@@ -344,9 +363,9 @@ dependencies = [
 
 [[package]]
 name = "bstr"
-version = "1.11.1"
+version = "1.11.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "786a307d683a5bf92e6fd5fd69a7eb613751668d1d8d67d802846dfe367c62c8"
+checksum = "531a9155a481e2ee699d4f98f43c0ca4ff8ee1bfd55c31e9e98fb29d2b176fe0"
 dependencies = [
  "memchr",
  "serde",
@@ -372,9 +391,9 @@ checksum = "325918d6fe32f23b19878fe4b34794ae41fc19ddbe53b10571a4874d44ffd39b"
 
 [[package]]
 name = "cc"
-version = "1.2.6"
+version = "1.2.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8d6dbb628b8f8555f86d0323c2eb39e3ec81901f4b83e091db8a6a76d316a333"
+checksum = "a012a0df96dd6d06ba9a1b29d6402d1a5d77c6befd2566afdc26e10603dc93d7"
 dependencies = [
  "shlex",
 ]
@@ -1644,7 +1663,7 @@ version = "0.26.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "df518b75016b4289cdddffa1b01f2122f4a49802c93191f3133f6dc2472ebcaa"
 dependencies = [
- "axum-core",
+ "axum-core 0.4.5",
  "http 1.2.0",
  "itoa",
  "maud_macros",
@@ -1920,7 +1939,7 @@ dependencies = [
  "bytes",
  "http 1.2.0",
  "opentelemetry",
- "reqwest 0.12.11",
+ "reqwest 0.12.12",
 ]
 
 [[package]]
@@ -1937,7 +1956,7 @@ dependencies = [
  "opentelemetry-proto",
  "opentelemetry_sdk",
  "prost",
- "reqwest 0.12.11",
+ "reqwest 0.12.12",
  "thiserror 1.0.69",
  "tokio",
  "tonic",
@@ -2505,9 +2524,9 @@ dependencies = [
 
 [[package]]
 name = "reqwest"
-version = "0.12.11"
+version = "0.12.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7fe060fe50f524be480214aba758c71f99f90ee8c83c5a36b5e9e1d568eb4eb3"
+checksum = "43e734407157c3c2034e0258f5e4473ddb361b1e85f95a66690d67264d7cd1da"
 dependencies = [
  "base64 0.22.1",
  "bytes",
@@ -2979,7 +2998,7 @@ dependencies = [
  "anyhow",
  "async-trait",
  "axum",
- "axum-core",
+ "axum-core 0.4.5",
  "chrono",
  "email_address",
  "http 1.2.0",
@@ -2995,7 +3014,7 @@ dependencies = [
  "serde_json",
  "thiserror 2.0.9",
  "tonic",
- "tower-cookies",
+ "tower-cookies 0.10.0",
  "tower-http",
  "tracing",
  "tracing-opentelemetry",
@@ -3158,9 +3177,9 @@ checksum = "13c2bddecc57b384dee18652358fb23172facb8a2c51ccc10d74c157bdea3292"
 
 [[package]]
 name = "syn"
-version = "2.0.93"
+version = "2.0.95"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9c786062daee0d6db1132800e623df74274a0a87322d8e183338e01b3d98d058"
+checksum = "46f71c0377baf4ef1cc3e3402ded576dccc315800fbc62dfc7fe04b009773b4a"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -3526,7 +3545,23 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4fd0118512cf0b3768f7fcccf0bef1ae41d68f2b45edc1e77432b36c97c56c6d"
 dependencies = [
  "async-trait",
- "axum-core",
+ "axum-core 0.4.5",
+ "cookie",
+ "futures-util",
+ "http 1.2.0",
+ "parking_lot",
+ "pin-project-lite",
+ "tower-layer",
+ "tower-service",
+]
+
+[[package]]
+name = "tower-cookies"
+version = "0.11.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "151b5a3e3c45df17466454bb74e9ecedecc955269bdedbf4d150dfa393b55a36"
+dependencies = [
+ "axum-core 0.5.0",
  "cookie",
  "futures-util",
  "http 1.2.0",
@@ -3838,7 +3873,7 @@ dependencies = [
  "tokio",
  "toml",
  "tonic",
- "tower-cookies",
+ "tower-cookies 0.11.0",
  "tower-http",
  "tracing",
  "url",
@@ -4184,9 +4219,9 @@ checksum = "589f6da84c646204747d1270a2a5661ea66ed1cced2631d546fdfb155959f9ec"
 
 [[package]]
 name = "winnow"
-version = "0.6.20"
+version = "0.6.22"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "36c1fec1a2bb5866f07c25f68c26e565c4c200aebb96d7e55710c19d3e8ac49b"
+checksum = "39281189af81c07ec09db316b302a3e67bf9bd7cbf6c820b50e35fee9c2fa980"
 dependencies = [
  "memchr",
 ]
