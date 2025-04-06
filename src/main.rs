@@ -88,11 +88,11 @@ async fn main() {
         .route("/", get(root))
         //.route("/notes", post(post_note))
         .route(
-            "/b/github/:owner/:repo",
+            "/b/github/{owner}/{repo}",
             get(backends::github::axum_get_site),
         )
         .route(
-            "/b/github/:owner/:repo/new/:template_name",
+            "/b/github/{owner}/{repo}/new/{template_name}",
             post(backends::github::axum_post_template),
         )
         //.route("/replies", post(post_reply))
