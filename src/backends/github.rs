@@ -32,11 +32,7 @@ impl GithubBackend {
             if let Some(owner) = repo.owner {
                 let n = format!("{}/{}", owner.login, repo.name);
 
-                v.push(GithubSite {
-                    name: n,
-                    owner: owner.login,
-                    repo: repo.name,
-                })
+                v.push(GithubSite { repo_id: repo.id })
             }
         }
 
@@ -46,7 +42,7 @@ impl GithubBackend {
     pub async fn get_site_config(&self, site: &GithubSite) -> anyhow::Result<SiteConfig> {
         let octocrab = self.config.build_octocrab().await?;
         let mut content = octocrab
-            .repos(&site.owner, &site.repo)
+            .repos_by_id(site.repo_id)
             .get_content()
             .path("w2z.toml")
             .r#ref("main")
@@ -71,7 +67,7 @@ impl GithubBackend {
 
         let octocrab = self.config.build_octocrab().await?;
         octocrab
-            .repos(site.owner, site.repo)
+            .repos_by_id(site.repo_id)
             .create_file(&uf.filename, "Create note", &uf.contents)
             .branch(self.config.branch()?)
             .commiter(CommitAuthor {
@@ -146,19 +142,15 @@ impl GithubConfig {
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct GithubSite {
-    pub name: String,
-    owner: String,
-    repo: String,
+    pub repo_id: octocrab::models::RepositoryId,
 }
 
 impl From<SiteParams> for GithubSite {
     fn from(item: SiteParams) -> Self {
-        let n = format!("{}/{}", item.owner, item.repo);
+        let n = format!("{}", item.repo_id);
 
         GithubSite {
-            name: n,
-            owner: item.owner,
-            repo: item.repo,
+            repo_id: item.repo_id.into(),
         }
     }
 }
@@ -183,8 +175,7 @@ impl maud::Render for PageMessage {
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct SiteParams {
-    owner: String,
-    repo: String,
+    repo_id: u64,
 }
 use crate::{AppError, AppState};
 pub async fn axum_get_site(
@@ -212,7 +203,7 @@ fn render_page(
     open_template: Option<String>,
     form_data: templating::Blob,
 ) -> maud::Markup {
-    let path_pref = format!("/b/github/{}", &site.name);
+    let path_pref = format!("/b/github/{}", &site.repo_id.to_string());
     let field_prefix = "fields".to_string();
 
     crate::html::maud_page(maud::html! {
@@ -263,19 +254,14 @@ impl SiteConfig {
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct TemplatePostParams {
-    owner: String,
-    repo: String,
+    repo_id: u64,
     template_name: String,
 }
 
 impl From<TemplatePostParams> for GithubSite {
     fn from(item: TemplatePostParams) -> Self {
-        let n = format!("{}/{}", item.owner, item.repo);
-
         GithubSite {
-            name: n,
-            owner: item.owner,
-            repo: item.repo,
+            repo_id: item.repo_id.into(),
         }
     }
 }

@@ -87,12 +87,9 @@ async fn main() {
         // `GET /` goes to `root`
         .route("/", get(root))
         //.route("/notes", post(post_note))
+        .route("/b/github/{repo_id}", get(backends::github::axum_get_site))
         .route(
-            "/b/github/{owner}/{repo}",
-            get(backends::github::axum_get_site),
-        )
-        .route(
-            "/b/github/{owner}/{repo}/new/{template_name}",
+            "/b/github/{repo_id}/new/{template_name}",
             post(backends::github::axum_post_template),
         )
         //.route("/replies", post(post_reply))
@@ -119,17 +116,22 @@ async fn health() -> Response {
 // basic handler that responds with a static string
 async fn root(
     State(app_state): State<AppState>,
-    user: Option<service_conventions::oidc::OIDCUser>,
+    user: Result<
+        Option<service_conventions::oidc::OIDCUser>,
+        service_conventions::oidc::OIDCUserError,
+    >,
 ) -> Result<Response, AppError> {
-    if let Some(user) = user {
+    tracing::info!(user= ?user, "user");
+
+    if let Ok(Some(user)) = user {
         let sites = &app_state.backend.sites().await?;
         tracing::debug!(sites= ?sites, "Sites");
 
         Ok(html::maud_page(html! {
               @for site in sites {
                   p {
-                    a href={"/b/github/" (site.name)}
-                      {(site.name)}}
+                    a href={"/b/github/" (site.repo_id)}
+                      {(site.repo_id)}}
               }
 
               p { "Welcome! " ( user.id)}
