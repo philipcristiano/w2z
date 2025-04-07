@@ -24,16 +24,31 @@ impl Default for InputFieldRequired {
 #[serde(tag = "type")]
 pub enum InputField {
     #[serde(alias = "string")]
-    String { name: String },
+    String {
+        name: String,
+        #[serde(default)]
+        required: InputFieldRequired,
+    },
     #[serde(alias = "text")]
-    Text { name: String },
+    Text {
+        name: String,
+        #[serde(default)]
+        required: InputFieldRequired,
+    },
     #[serde(alias = "datetime")]
-    DateTime { name: String, default_now: bool },
+    DateTime {
+        name: String,
+        default_now: bool,
+        #[serde(default)]
+        required: InputFieldRequired,
+    },
     #[serde(alias = "list")]
     List {
         name: String,
         // list_of_type: InputField,
         // Eventually support types, right now assume String type
+        #[serde(default)]
+        required: InputFieldRequired,
     },
     #[serde(alias = "object")]
     Object {
@@ -90,8 +105,8 @@ pub enum InputEnable {
 impl InputField {
     pub fn name(&self) -> &String {
         match self {
-            InputField::Text { name } => name,
-            InputField::String { name } => name,
+            InputField::Text { name, .. } => name,
+            InputField::String { name, .. } => name,
             InputField::Object { name, .. } => name,
             InputField::List { name, .. } => name,
             InputField::DateTime { name, .. } => name,
@@ -100,11 +115,11 @@ impl InputField {
 
     pub fn is_required(&self) -> bool {
         match self {
-            InputField::Text { .. } => InputFieldRequired(true).0,
-            InputField::String { .. } => InputFieldRequired(true).0,
+            InputField::Text { required, .. } => required.0,
+            InputField::String { required, .. } => required.0,
             InputField::Object { required, .. } => required.0,
-            InputField::List { .. } => InputFieldRequired(true).0,
-            InputField::DateTime { .. } => InputFieldRequired(true).0,
+            InputField::List { required, .. } => required.0,
+            InputField::DateTime { required, .. } => required.0,
         }
     }
     pub fn form_markup(
@@ -114,14 +129,14 @@ impl InputField {
         blob: &Blob,
     ) -> maud::Markup {
         match self {
-            InputField::Text { name } => {
+            InputField::Text { name, .. } => {
                 let field_name = format!("{}[{}]", prefix, name);
                 maud::html! {
                     @if form_opts.label == FormLabel::Yes { label  { (name)} }
                     textarea white-space="pre-wrap" class="border min-w-full" name={(&field_name)} {(blob.form_field_or_empty_string(&name))}
                 }
             }
-            InputField::String { name } => {
+            InputField::String { name, .. } => {
                 let field_name = format!("{}[{}]", prefix, name);
                 maud::html! {
                     @if form_opts.label == FormLabel::Yes { label  { (field_name)} }
@@ -134,10 +149,11 @@ impl InputField {
                     }
                 }
             }
-            InputField::List { name } => {
+            InputField::List { name, required, .. } => {
                 let list_item_field_name = format!("{}[{}]", prefix, name);
                 let item_template = InputField::String {
                     name: "".to_string(),
+                    required: required.clone(),
                 };
                 maud::html! {
                     span {"List items!"}
@@ -274,22 +290,33 @@ impl Blob {
     ) -> Result<indexmap::IndexMap<String, FieldValue>, TemplateError> {
         let mut im = indexmap::IndexMap::new();
         for input_field in input_fields {
+            tracing::info!(if = ?input_field, "field!");
             let maybe_blob_value = hm.get(input_field.name());
-            if let Some(blob_value) = maybe_blob_value {
+            let maybe_parsed_value = if let Some(blob_value) = maybe_blob_value {
                 let field_value =
                     FieldValue::try_new(&input_field, blob_value.to_owned(), context)?;
-                im.insert(input_field.name().clone(), field_value);
+                field_value
             } else {
-                if let Some(default_fv) = FieldValue::try_new_default(&input_field, context) {
-                    im.insert(input_field.name().clone(), default_fv);
-                } else {
+                None
+            };
+
+            let maybe_default_value = FieldValue::try_new_default(&input_field, context);
+            let maybe_value = match (maybe_parsed_value, maybe_default_value) {
+                (Some(pv), _) => Some(pv),
+                (_, Some(dv)) => Some(dv),
+                (_, Some(dv)) => Some(dv),
+                _ => {
                     if input_field.is_required() {
-                        return Err(TemplateError::MissingField {
+                        Err(TemplateError::MissingField {
                             field: input_field.name().to_owned(),
-                        });
+                        })?;
                     }
+                    None
                 }
-                // return error
+            };
+
+            if let Some(value) = maybe_value {
+                im.insert(input_field.name().clone(), value);
             }
         }
         Ok(im)
@@ -301,8 +328,6 @@ use thiserror::Error;
 pub enum TemplateError {
     #[error("Field is missing: {field}")]
     MissingField { field: String },
-    #[error("Field is missing: {field}")]
-    EmptyField { field: String },
     #[error("Error with data in a field")]
     FieldDataError(String),
 }
@@ -327,33 +352,31 @@ impl FieldValue {
         input_field: &InputField,
         value: PostTypes,
         context: DataContext,
-    ) -> Result<FieldValue, TemplateError> {
+    ) -> Result<Option<FieldValue>, TemplateError> {
         match input_field {
-            InputField::String { name } => {
+            InputField::String { name, .. } => {
                 let vs = value.value_string()?;
                 if vs.is_empty() {
-                    return Err(TemplateError::EmptyField {
-                        field: name.to_owned(),
-                    });
+                    return Ok(None);
                 } else {
-                    Ok(FieldValue::String(vs))
+                    Ok(Some(FieldValue::String(vs)))
                 }
             }
-            InputField::Text { name } => {
+            InputField::Text { name, .. } => {
                 let vs = value.value_string()?;
                 if vs.is_empty() {
-                    return Err(TemplateError::EmptyField {
-                        field: name.to_owned(),
-                    });
+                    Ok(None)
                 } else {
-                    Ok(FieldValue::Text(vs))
+                    Ok(Some(FieldValue::Text(vs)))
                 }
             }
-            InputField::DateTime { name, default_now } => {
+            InputField::DateTime {
+                name, default_now, ..
+            } => {
                 let now = chrono::Utc::now();
-                Ok(FieldValue::DateTime(now))
+                Ok(Some(FieldValue::DateTime(now)))
             }
-            InputField::List { name } => Ok(FieldValue::List(value.value_strings()?)),
+            InputField::List { name, .. } => Ok(Some(FieldValue::List(value.value_strings()?))),
             InputField::Object {
                 name, input_fields, ..
             } => {
@@ -362,20 +385,22 @@ impl FieldValue {
                     input_fields.to_owned(),
                     context,
                 )?;
-                Ok(FieldValue::Object(d))
+                Ok(Some(FieldValue::Object(d)))
             }
         }
     }
     fn try_new_default(input_field: &InputField, context: DataContext) -> Option<FieldValue> {
         match input_field {
-            InputField::DateTime { name, default_now } => {
+            InputField::DateTime {
+                name, default_now, ..
+            } => {
                 if default_now.clone() {
                     return Some(FieldValue::DateTime(context.now));
                 } else {
                     return None;
                 }
             }
-            InputField::List { name } => Some(FieldValue::List(vec![])),
+            InputField::List { name, .. } => Some(FieldValue::List(vec![])),
             _ => None,
         }
     }
@@ -436,6 +461,7 @@ impl Template {
     }
 
     pub fn as_toml(&self, data: Blob) -> Result<String, TemplateError> {
+        tracing::info!(t= ?self, "template");
         let structured_data =
             data.to_valid_structure(self.input_fields.clone(), DataContext::default())?;
 
@@ -498,6 +524,7 @@ mod test_structure {
     fn single_text_field() {
         let text_field = InputField::Text {
             name: "title".to_string(),
+            required: InputFieldRequired(true),
         };
         let mut fields_hm = HashMap::new();
         let val = PostTypes::String("Hello World!".to_string());
@@ -523,6 +550,7 @@ title = "Hello World!"
     fn single_text_field_missing_data() {
         let text_field = InputField::Text {
             name: "title".to_string(),
+            required: InputFieldRequired(true),
         };
         let fields_hm = HashMap::new();
         let data = Blob { fields: fields_hm };
@@ -537,16 +565,49 @@ title = "Hello World!"
     }
 
     #[test]
+    fn single_text_field_empty_but_not_required() {
+        let text_field = InputField::Text {
+            name: "title".to_string(),
+            required: InputFieldRequired(false),
+        };
+        let mut fields_hm = HashMap::new();
+        let val = PostTypes::String("".to_string());
+        fields_hm.insert("title".to_string(), val);
+        let data = Blob { fields: fields_hm };
+        let structured_data = data
+            .to_valid_structure(vec![text_field], DataContext::default())
+            .unwrap();
+
+        assert_eq!(structured_data.keys().len(), 0);
+    }
+
+    #[test]
+    fn single_text_field_missing_data_but_not_required() {
+        let text_field = InputField::Text {
+            name: "title".to_string(),
+            required: InputFieldRequired(false),
+        };
+        let fields_hm = HashMap::new();
+        let data = Blob { fields: fields_hm };
+        let structured_data = data
+            .to_valid_structure(vec![text_field], DataContext::default())
+            .unwrap();
+
+        assert_eq!(structured_data.keys().len(), 0);
+    }
+
+    #[test]
     fn single_text_field_empty_of_data() {
         let text_field = InputField::Text {
             name: "title".to_string(),
+            required: InputFieldRequired(true),
         };
         let mut fields_hm = HashMap::new();
         let val = PostTypes::String("".to_string());
         fields_hm.insert("title".to_string(), val);
         let data = Blob { fields: fields_hm };
 
-        let expected = TemplateError::EmptyField {
+        let expected = TemplateError::MissingField {
             field: "title".to_string(),
         };
         let maybe_structured_data = data
@@ -559,6 +620,7 @@ title = "Hello World!"
     fn single_string_field() {
         let text_field = InputField::String {
             name: "title".to_string(),
+            required: InputFieldRequired(true),
         };
         let mut fields_hm = HashMap::new();
         let val = PostTypes::String("Hello World!".to_string());
@@ -584,13 +646,14 @@ title = "Hello World!"
     fn single_string_field_empty_of_data() {
         let field = InputField::String {
             name: "title".to_string(),
+            required: InputFieldRequired(true),
         };
         let mut fields_hm = HashMap::new();
         let val = PostTypes::String("".to_string());
         fields_hm.insert("title".to_string(), val);
         let data = Blob { fields: fields_hm };
 
-        let expected = TemplateError::EmptyField {
+        let expected = TemplateError::MissingField {
             field: "title".to_string(),
         };
         let maybe_structured_data = data
@@ -603,6 +666,7 @@ title = "Hello World!"
     fn multiple_strings() {
         let field = InputField::List {
             name: "items".to_string(),
+            required: InputFieldRequired(true),
         };
         let mut fields_hm = HashMap::new();
         let val = PostTypes::List(vec!["1".to_string(), "2".to_string()]);
@@ -627,6 +691,7 @@ items = ["1", "2"]
     fn empty_list_of_strings_() {
         let field = InputField::List {
             name: "items".to_string(),
+            required: InputFieldRequired(true),
         };
         let fields_hm = HashMap::new();
         let data = Blob { fields: fields_hm };
@@ -650,6 +715,7 @@ items = []
         let dt_field = InputField::DateTime {
             name: "date".to_string(),
             default_now: true,
+            required: InputFieldRequired(true),
         };
         let fields_hm = HashMap::new();
 
@@ -682,9 +748,11 @@ date = "{}"
     fn string_and_toml_content_field() {
         let string_field = InputField::String {
             name: "title".to_string(),
+            required: InputFieldRequired(true),
         };
         let text_field = InputField::String {
             name: "body".to_string(),
+            required: InputFieldRequired(true),
         };
         let mut fields_hm = HashMap::new();
         let sval = PostTypes::String("Hello World!".to_string());
@@ -713,6 +781,7 @@ Text body!
     fn single_object_string_field() {
         let text_field = InputField::String {
             name: "title".to_string(),
+            required: InputFieldRequired(true),
         };
         let obj_field = InputField::Object {
             name: "extra".to_string(),
@@ -748,6 +817,7 @@ title = "Hello extra World!"
     fn single_optional_object_string_field() {
         let text_field = InputField::String {
             name: "title".to_string(),
+            required: InputFieldRequired(true),
         };
         let obj_field = InputField::Object {
             name: "extra".to_string(),
