@@ -204,7 +204,6 @@ fn render_page(
     form_data: templating::Blob,
 ) -> maud::Markup {
     let path_pref = format!("/b/github/{}", &site.repo_id.to_string());
-    let field_prefix = "fields".to_string();
 
     crate::html::maud_page(maud::html! {
         @for message in messages{
@@ -221,10 +220,7 @@ fn render_page(
               h2 script="on click toggle .hidden on next <div/>" {(template_name)}
               div class={(hidden)} {
                 form method="post" action={(&path_pref) "/new/" (template_name)} {
-                  @for input_field in &template.input_fields {
-                      (input_field.form_markup(&field_prefix, templating::FormInputOptions::default(), &form_data))
-                      br {}
-                  }
+                  (template.form_fields_markup(templating::FormInputOptions::default(), &form_data  ))
                   input type="submit" class="border" {}
                 }
               }

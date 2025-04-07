@@ -87,15 +87,6 @@ pub enum InputEnable {
     Disabled,
 }
 
-impl InputEnable {
-    fn markup(&self) -> &str {
-        match self {
-            InputEnable::Enabled => "false",
-            InputEnable::Disabled => "disabled",
-        }
-    }
-}
-
 impl InputField {
     pub fn name(&self) -> &String {
         match self {
@@ -112,8 +103,8 @@ impl InputField {
             InputField::Text { .. } => InputFieldRequired(true).0,
             InputField::String { .. } => InputFieldRequired(true).0,
             InputField::Object { required, .. } => required.0,
-            InputField::List { name, .. } => InputFieldRequired(true).0,
-            InputField::DateTime { name, .. } => InputFieldRequired(true).0,
+            InputField::List { .. } => InputFieldRequired(true).0,
+            InputField::DateTime { .. } => InputFieldRequired(true).0,
         }
     }
     pub fn form_markup(
@@ -138,7 +129,7 @@ impl InputField {
                         InputEnable::Disabled =>{
                             input class="border min-w-full" name={(&field_name)} value={(blob.form_field_or_empty_string(&name))} disabled; {} }
                         InputEnable::Enabled =>{
-                            input class="border min-w-full" name={(&field_name)} value={( blob.form_field_or_empty_string(&name))} {}}
+                            input class="border min-w-full" name={(&field_name)} value={(blob.form_field_or_empty_string(&name))} {}}
 
                     }
                 }
@@ -195,21 +186,21 @@ impl PostTypes {
     fn value_string(self) -> Result<String, TemplateError> {
         match self {
             PostTypes::String(s) => Ok(s),
-            PostTypes::List(l) => Err(TemplateError::FieldDataError(
+            PostTypes::List(_) => Err(TemplateError::FieldDataError(
                 "Cannot convert to list".to_string(),
             )),
-            PostTypes::Object(m) => Err(TemplateError::FieldDataError(
+            PostTypes::Object(_) => Err(TemplateError::FieldDataError(
                 "Cannot convert to string".to_string(),
             )),
         }
     }
     fn value_strings(self) -> Result<Vec<String>, TemplateError> {
         match self {
-            PostTypes::String(m) => Err(TemplateError::FieldDataError(
+            PostTypes::String(_) => Err(TemplateError::FieldDataError(
                 "Cannot convert to list".to_string(),
             )),
             PostTypes::List(l) => Ok(l),
-            PostTypes::Object(m) => Err(TemplateError::FieldDataError(
+            PostTypes::Object(_) => Err(TemplateError::FieldDataError(
                 "Cannot convert to list".to_string(),
             )),
         }
@@ -218,10 +209,10 @@ impl PostTypes {
     fn value_hm(self) -> Result<HashMap<String, PostTypes>, TemplateError> {
         match self {
             PostTypes::Object(m) => Ok(m),
-            PostTypes::List(l) => Err(TemplateError::FieldDataError(
+            PostTypes::List(_) => Err(TemplateError::FieldDataError(
                 "Cannot convert to list".to_string(),
             )),
-            PostTypes::String(s) => Err(TemplateError::FieldDataError(
+            PostTypes::String(_) => Err(TemplateError::FieldDataError(
                 "Cannot convert to hashmap".to_string(),
             )),
         }
@@ -402,7 +393,7 @@ impl FieldValue {
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct Template {
-    pub input_fields: Vec<InputField>,
+    input_fields: Vec<InputField>,
     pub path: String,
 }
 
@@ -427,6 +418,21 @@ impl Template {
         let context = tera::Context::from_serialize(d)?;
         let r = self.renderer(&self.path)?;
         Ok(r.render("tmpl", &context)?)
+    }
+
+    pub fn form_fields_markup(
+        &self,
+        input_opts: FormInputOptions,
+        input_form_data: &Blob,
+    ) -> maud::Markup {
+        let prefix = "fields".to_string();
+        maud::html! {
+            @for input_field in &self.input_fields {
+                (input_field.form_markup(&prefix, input_opts, &input_form_data))
+                br {}
+            }
+
+        }
     }
 
     pub fn as_toml(&self, data: Blob) -> Result<String, TemplateError> {
