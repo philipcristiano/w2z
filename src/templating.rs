@@ -20,6 +20,242 @@ impl Default for InputFieldRequired {
     }
 }
 
+trait InputFieldImpl {
+    fn markup(&self, prefix: &str, form_opts: FormInputOptions, blob: &Blob) -> maud::Markup;
+
+    fn name(&self) -> &String;
+    fn is_required(&self) -> &InputFieldRequired;
+
+    fn field_name(&self, prefix: &str) -> String {
+        format!("{}[{}]", prefix, self.name())
+    }
+
+    fn parse_value(
+        &self,
+        value: Option<&PostTypes>,
+        context: DataContext,
+    ) -> Result<Option<FieldValue>, TemplateError>;
+}
+
+trait InputFieldType: std::fmt::Debug + InputFieldImpl {}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq)]
+struct StringInputField {
+    name: String,
+    required: InputFieldRequired,
+}
+
+impl InputFieldType for StringInputField {}
+impl InputFieldImpl for StringInputField {
+    fn name(&self) -> &String {
+        &self.name
+    }
+    fn is_required(&self) -> &InputFieldRequired {
+        &self.required
+    }
+
+    fn markup(&self, prefix: &str, form_opts: FormInputOptions, blob: &Blob) -> maud::Markup {
+        let field_name = self.field_name(prefix);
+        maud::html! {
+            @if form_opts.label == FormLabel::Yes { label  { (&field_name)} }
+            @match form_opts.input_enable {
+                InputEnable::Disabled =>{
+                    input class="border min-w-full" name={(&field_name)} value={(blob.form_field_or_empty_string(&self.name))} disabled; {} }
+                InputEnable::Enabled =>{
+                    input class="border min-w-full" name={(&field_name)} value={(blob.form_field_or_empty_string(&self.name))} {}}
+
+            }
+        }
+    }
+    fn parse_value(
+        &self,
+        value: Option<&PostTypes>,
+        context: DataContext,
+    ) -> Result<Option<FieldValue>, TemplateError> {
+        let value_s = if let Some(value) = value {
+            let v = value.clone().value_string()?;
+            if v.is_empty() {
+                None
+            } else {
+                Some(v)
+            }
+        } else {
+            None
+        };
+
+        match (value_s, &self.required) {
+            (Some(v), _) => Ok(Some(FieldValue::String(v))),
+            (None, InputFieldRequired(true)) => Err(TemplateError::MissingField {
+                field: self.name.clone(),
+            }),
+            (None, InputFieldRequired(false)) => Ok(None),
+        }
+    }
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq)]
+struct TextInputField {
+    name: String,
+    required: InputFieldRequired,
+}
+
+impl InputFieldType for TextInputField {}
+impl InputFieldImpl for TextInputField {
+    fn name(&self) -> &String {
+        &self.name
+    }
+    fn is_required(&self) -> &InputFieldRequired {
+        &self.required
+    }
+    fn markup(&self, prefix: &str, form_opts: FormInputOptions, blob: &Blob) -> maud::Markup {
+        let field_name = self.field_name(prefix);
+        maud::html! {
+            @if form_opts.label == FormLabel::Yes { label  { (&field_name)} }
+            textarea white-space="pre-wrap" class="border min-w-full" name={(&field_name)} {(blob.form_field_or_empty_string(self.name()))}
+        }
+    }
+    fn parse_value(
+        &self,
+        value: Option<&PostTypes>,
+        context: DataContext,
+    ) -> Result<Option<FieldValue>, TemplateError> {
+        let value_s = if let Some(value) = value {
+            let v = value.clone().value_string()?;
+            if v.is_empty() {
+                None
+            } else {
+                Some(v)
+            }
+        } else {
+            None
+        };
+
+        match (value_s, &self.required) {
+            (Some(v), _) => Ok(Some(FieldValue::String(v))),
+            (None, InputFieldRequired(true)) => Err(TemplateError::MissingField {
+                field: self.name.clone(),
+            }),
+            (None, InputFieldRequired(false)) => Ok(None),
+        }
+    }
+}
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq)]
+struct DateTimeInputField {
+    name: String,
+    default_now: bool,
+    required: InputFieldRequired,
+}
+impl InputFieldType for DateTimeInputField {}
+impl InputFieldImpl for DateTimeInputField {
+    fn name(&self) -> &String {
+        &self.name
+    }
+    fn is_required(&self) -> &InputFieldRequired {
+        &self.required
+    }
+    fn markup(&self, prefix: &str, form_opts: FormInputOptions, blob: &Blob) -> maud::Markup {
+        let field_name = self.field_name(prefix);
+        maud::html! {
+            label for={(&field_name)} { (&field_name)}
+            span {"Date will be set automatically"}
+        }
+    }
+    fn parse_value(
+        &self,
+        value: Option<&PostTypes>,
+        context: DataContext,
+    ) -> Result<Option<FieldValue>, TemplateError> {
+        Ok(Some(FieldValue::DateTime(context.now)))
+    }
+}
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq)]
+struct ListInputField {
+    name: String,
+    required: InputFieldRequired,
+}
+impl InputFieldType for ListInputField {}
+impl InputFieldImpl for ListInputField {
+    fn name(&self) -> &String {
+        &self.name
+    }
+    fn is_required(&self) -> &InputFieldRequired {
+        &self.required
+    }
+    fn markup(&self, prefix: &str, form_opts: FormInputOptions, blob: &Blob) -> maud::Markup {
+        let list_item_field_name = self.field_name(prefix);
+        let item_template = InputField::String {
+            name: "".to_string(),
+            required: self.required.clone(),
+        }
+        .fieldimpl();
+        maud::html! {
+            span {"List items!"}
+            br {}
+            label { (&list_item_field_name)}
+            button type="button" script="on click set N to the next <div/> then set N to N.cloneNode(true) then remove .hidden from N then remove @disabled from the <input/> in N then put N after me" {"Add item"}
+            div class="hidden" {
+                (item_template.markup(&list_item_field_name, form_opts.without_label().disable_input(), blob))
+                button type="button" script="on click remove me.parentElement" {"Remove"}
+            }
+        }
+    }
+
+    fn parse_value(
+        &self,
+        value: Option<&PostTypes>,
+        context: DataContext,
+    ) -> Result<Option<FieldValue>, TemplateError> {
+        if let Some(v) = value {
+            Ok(Some(FieldValue::List(v.clone().value_strings()?)))
+        } else {
+            Ok(Some(FieldValue::List(vec![])))
+        }
+    }
+}
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq)]
+struct ObjectInputField {
+    name: String,
+    input_fields: Vec<InputField>,
+    required: InputFieldRequired,
+}
+
+impl InputFieldType for ObjectInputField {}
+impl InputFieldImpl for ObjectInputField {
+    fn name(&self) -> &String {
+        &self.name
+    }
+    fn is_required(&self) -> &InputFieldRequired {
+        &self.required
+    }
+    fn markup(&self, prefix: &str, form_opts: FormInputOptions, blob: &Blob) -> maud::Markup {
+        let field_name = self.field_name(prefix);
+        maud::html! {
+            @if form_opts.label == FormLabel::Yes { label  { (field_name)} }
+            @for if_field in self.input_fields.clone() {
+                (if_field.fieldimpl().markup(&field_name, form_opts, blob))
+
+            }
+        }
+    }
+
+    fn parse_value(
+        &self,
+        value: Option<&PostTypes>,
+        context: DataContext,
+    ) -> Result<Option<FieldValue>, TemplateError> {
+        if let Some(v) = value {
+            let d = Blob::hm_to_valid_structure(
+                v.clone().value_hm()?,
+                self.input_fields.to_owned(),
+                context,
+            )?;
+            Ok(Some(FieldValue::Object(d)))
+        } else {
+            Ok(None)
+        }
+    }
+}
+
 #[derive(Clone, Debug, Deserialize, PartialEq, Eq)]
 #[serde(tag = "type")]
 pub enum InputField {
@@ -103,90 +339,31 @@ pub enum InputEnable {
 }
 
 impl InputField {
-    pub fn name(&self) -> &String {
-        match self {
-            InputField::Text { name, .. } => name,
-            InputField::String { name, .. } => name,
-            InputField::Object { name, .. } => name,
-            InputField::List { name, .. } => name,
-            InputField::DateTime { name, .. } => name,
-        }
-    }
-
-    pub fn is_required(&self) -> bool {
-        match self {
-            InputField::Text { required, .. } => required.0,
-            InputField::String { required, .. } => required.0,
-            InputField::Object { required, .. } => required.0,
-            InputField::List { required, .. } => required.0,
-            InputField::DateTime { required, .. } => required.0,
-        }
-    }
-    pub fn form_markup(
-        &self,
-        prefix: &String,
-        form_opts: FormInputOptions,
-        blob: &Blob,
-    ) -> maud::Markup {
-        match self {
-            InputField::Text { name, .. } => {
-                let field_name = format!("{}[{}]", prefix, name);
-                maud::html! {
-                    @if form_opts.label == FormLabel::Yes { label  { (name)} }
-                    textarea white-space="pre-wrap" class="border min-w-full" name={(&field_name)} {(blob.form_field_or_empty_string(&name))}
-                }
-            }
-            InputField::String { name, .. } => {
-                let field_name = format!("{}[{}]", prefix, name);
-                maud::html! {
-                    @if form_opts.label == FormLabel::Yes { label  { (field_name)} }
-                    @match form_opts.input_enable {
-                        InputEnable::Disabled =>{
-                            input class="border min-w-full" name={(&field_name)} value={(blob.form_field_or_empty_string(&name))} disabled; {} }
-                        InputEnable::Enabled =>{
-                            input class="border min-w-full" name={(&field_name)} value={(blob.form_field_or_empty_string(&name))} {}}
-
-                    }
-                }
-            }
-            InputField::List { name, required, .. } => {
-                let list_item_field_name = format!("{}[{}]", prefix, name);
-                let item_template = InputField::String {
-                    name: "".to_string(),
-                    required: required.clone(),
-                };
-                maud::html! {
-                    span {"List items!"}
-                    br {}
-                    label { (&list_item_field_name)}
-                    button type="button" script="on click set N to the next <div/> then set N to N.cloneNode(true) then remove .hidden from N then remove @disabled from the <input/> in N then put N after me" {"Add item"}
-                    div class="hidden" {
-                        (item_template.form_markup(&list_item_field_name, form_opts.without_label().disable_input(), blob))
-                        button type="button" script="on click remove me.parentElement" {"Remove"}
-                    }
-                }
-            }
+    pub fn fieldimpl(self) -> Box<dyn InputFieldType> {
+        let f: Box<dyn InputFieldType> = match self {
+            InputField::String { name, required } => Box::new(StringInputField { name, required }),
+            InputField::Text { name, required } => Box::new(TextInputField { name, required }),
+            InputField::DateTime {
+                name,
+                default_now,
+                required,
+            } => Box::new(DateTimeInputField {
+                name,
+                default_now,
+                required,
+            }),
+            InputField::List { name, required } => Box::new(ListInputField { name, required }),
             InputField::Object {
-                name, input_fields, ..
-            } => {
-                let field_name = format!("{}[{}]", prefix, name);
-                maud::html! {
-                    @if form_opts.label == FormLabel::Yes { label  { (field_name)} }
-                    @for if_field in input_fields {
-                        (if_field.form_markup(&field_name, form_opts, blob))
-
-                    }
-                }
-            }
-            InputField::DateTime { name, .. } => {
-                let field_name = format!("{}[{}]", prefix, name);
-                // TODO default shouldn't be handled by omitting things
-                maud::html! {
-                    label for={(&field_name)} { (&field_name)}
-                    span {"Date will be set automatically"}
-                }
-            }
-        }
+                name,
+                input_fields,
+                required,
+            } => Box::new(ObjectInputField {
+                name,
+                input_fields,
+                required,
+            }),
+        };
+        return f;
     }
 }
 
@@ -259,7 +436,7 @@ impl Blob {
         }
     }
 
-    pub fn form_field(&self, field_name: &String) -> Result<Option<String>, TemplateError> {
+    pub fn form_field(&self, field_name: &str) -> Result<Option<String>, TemplateError> {
         if let Some(item) = self.fields.get(field_name) {
             Ok(Some(item.clone().value_string()?.clone()))
         } else {
@@ -267,7 +444,7 @@ impl Blob {
         }
     }
 
-    pub fn form_field_or_empty_string(&self, field_name: &String) -> String {
+    pub fn form_field_or_empty_string(&self, field_name: &str) -> String {
         if let Ok(Some(s)) = self.form_field(field_name) {
             s
         } else {
@@ -289,33 +466,11 @@ impl Blob {
         context: DataContext,
     ) -> Result<indexmap::IndexMap<String, FieldValue>, TemplateError> {
         let mut im = indexmap::IndexMap::new();
-        for input_field in input_fields {
+        for input_fieldw in input_fields {
+            let input_field = input_fieldw.fieldimpl();
             tracing::info!(if = ?input_field, "field!");
             let maybe_blob_value = hm.get(input_field.name());
-            let maybe_parsed_value = if let Some(blob_value) = maybe_blob_value {
-                let field_value =
-                    FieldValue::try_new(&input_field, blob_value.to_owned(), context)?;
-                field_value
-            } else {
-                None
-            };
-
-            let maybe_default_value = FieldValue::try_new_default(&input_field, context);
-            let maybe_value = match (maybe_parsed_value, maybe_default_value) {
-                (Some(pv), _) => Some(pv),
-                (_, Some(dv)) => Some(dv),
-                (_, Some(dv)) => Some(dv),
-                _ => {
-                    if input_field.is_required() {
-                        Err(TemplateError::MissingField {
-                            field: input_field.name().to_owned(),
-                        })?;
-                    }
-                    None
-                }
-            };
-
-            if let Some(value) = maybe_value {
+            if let Some(value) = input_field.parse_value(maybe_blob_value.to_owned(), context)? {
                 im.insert(input_field.name().clone(), value);
             }
         }
@@ -348,63 +503,6 @@ pub enum FieldValue {
 }
 
 impl FieldValue {
-    fn try_new(
-        input_field: &InputField,
-        value: PostTypes,
-        context: DataContext,
-    ) -> Result<Option<FieldValue>, TemplateError> {
-        match input_field {
-            InputField::String { name, .. } => {
-                let vs = value.value_string()?;
-                if vs.is_empty() {
-                    return Ok(None);
-                } else {
-                    Ok(Some(FieldValue::String(vs)))
-                }
-            }
-            InputField::Text { name, .. } => {
-                let vs = value.value_string()?;
-                if vs.is_empty() {
-                    Ok(None)
-                } else {
-                    Ok(Some(FieldValue::Text(vs)))
-                }
-            }
-            InputField::DateTime {
-                name, default_now, ..
-            } => {
-                let now = chrono::Utc::now();
-                Ok(Some(FieldValue::DateTime(now)))
-            }
-            InputField::List { name, .. } => Ok(Some(FieldValue::List(value.value_strings()?))),
-            InputField::Object {
-                name, input_fields, ..
-            } => {
-                let d = Blob::hm_to_valid_structure(
-                    value.value_hm()?,
-                    input_fields.to_owned(),
-                    context,
-                )?;
-                Ok(Some(FieldValue::Object(d)))
-            }
-        }
-    }
-    fn try_new_default(input_field: &InputField, context: DataContext) -> Option<FieldValue> {
-        match input_field {
-            InputField::DateTime {
-                name, default_now, ..
-            } => {
-                if default_now.clone() {
-                    return Some(FieldValue::DateTime(context.now));
-                } else {
-                    return None;
-                }
-            }
-            InputField::List { name, .. } => Some(FieldValue::List(vec![])),
-            _ => None,
-        }
-    }
-
     fn as_body_string(self) -> String {
         match self {
             FieldValue::String(s) => s,
@@ -453,7 +551,7 @@ impl Template {
         let prefix = "fields".to_string();
         maud::html! {
             @for input_field in &self.input_fields {
-                (input_field.form_markup(&prefix, input_opts, &input_form_data))
+                (input_field.clone().fieldimpl().markup(&prefix, input_opts, &input_form_data))
                 br {}
             }
 
@@ -471,7 +569,6 @@ impl Template {
 }
 
 fn format_toml_frontmatter_file(mut data: indexmap::IndexMap<String, FieldValue>) -> String {
-    println!("Data {:?}", &data);
     let body = data.shift_remove("body");
 
     let fm = toml::to_string(&data).unwrap();
@@ -723,7 +820,6 @@ items = []
         let context = DataContext {
             now: chrono::Utc::now(),
         };
-        println!("{}", toml::to_string(&context).unwrap());
 
         // Format to match
         // https://github.com/pitdicker/chrono/blob/2d2062f576f306222217abb866feaa3dbfda94a2/src/datetime/serde.rs#L45
