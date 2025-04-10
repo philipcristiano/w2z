@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.3](https://github.com/philipcristiano/w2z/compare/v0.10.2...v0.10.3) (2025-04-10)
+
+
+### Bug Fixes
+
+* **deps:** update rust crate rust-embed to v8.7.0 ([#342](https://github.com/philipcristiano/w2z/issues/342)) ([469eada](https://github.com/philipcristiano/w2z/commit/469eada04c0be1e5935feae695da7a60e9a9f6dd))
+
 ## [0.10.2](https://github.com/philipcristiano/w2z/compare/v0.10.1...v0.10.2) (2025-04-07)
 
 
