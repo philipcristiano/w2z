@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.10.3](https://github.com/philipcristiano/w2z/compare/v0.10.2...v0.10.3) (2025-04-18)
+
+
+### Bug Fixes
+
+* **deps:** update rust crate anyhow to v1.0.98 ([#345](https://github.com/philipcristiano/w2z/issues/345)) ([76b23c2](https://github.com/philipcristiano/w2z/commit/76b23c2a141dabe8b766d397ea15f95084cffa99))
+* **deps:** update rust crate clap to v4.5.36 ([#344](https://github.com/philipcristiano/w2z/issues/344)) ([46c086e](https://github.com/philipcristiano/w2z/commit/46c086e65a6567eaf4e1018db024b65a28223928))
+* **deps:** update rust crate clap to v4.5.37 ([#347](https://github.com/philipcristiano/w2z/issues/347)) ([96a1eb4](https://github.com/philipcristiano/w2z/commit/96a1eb47b1db5b5d27c6c56afaf60a374c94600f))
+* **deps:** update rust crate rust-embed to v8.7.0 ([#342](https://github.com/philipcristiano/w2z/issues/342)) ([469eada](https://github.com/philipcristiano/w2z/commit/469eada04c0be1e5935feae695da7a60e9a9f6dd))
+
 ## [0.10.2](https://github.com/philipcristiano/w2z/compare/v0.10.1...v0.10.2) (2025-04-07)
 
 
