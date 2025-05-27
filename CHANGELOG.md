@@ -1,5 +1,30 @@
 # Changelog
 
+## [0.10.3](https://github.com/philipcristiano/w2z/compare/v0.10.2...v0.10.3) (2025-05-27)
+
+
+### Bug Fixes
+
+* **deps:** update rust crate anyhow to v1.0.98 ([#345](https://github.com/philipcristiano/w2z/issues/345)) ([76b23c2](https://github.com/philipcristiano/w2z/commit/76b23c2a141dabe8b766d397ea15f95084cffa99))
+* **deps:** update rust crate axum to v0.8.4 ([#354](https://github.com/philipcristiano/w2z/issues/354)) ([c0ec1e1](https://github.com/philipcristiano/w2z/commit/c0ec1e1ddb937499531c3a40398c87730e1f4915))
+* **deps:** update rust crate chrono to v0.4.41 ([#353](https://github.com/philipcristiano/w2z/issues/353)) ([7ba068f](https://github.com/philipcristiano/w2z/commit/7ba068f6a3ea90d16599e6a04eaaccf7c35e0f58))
+* **deps:** update rust crate clap to v4.5.36 ([#344](https://github.com/philipcristiano/w2z/issues/344)) ([46c086e](https://github.com/philipcristiano/w2z/commit/46c086e65a6567eaf4e1018db024b65a28223928))
+* **deps:** update rust crate clap to v4.5.37 ([#347](https://github.com/philipcristiano/w2z/issues/347)) ([96a1eb4](https://github.com/philipcristiano/w2z/commit/96a1eb47b1db5b5d27c6c56afaf60a374c94600f))
+* **deps:** update rust crate clap to v4.5.38 ([#361](https://github.com/philipcristiano/w2z/issues/361)) ([ce04c43](https://github.com/philipcristiano/w2z/commit/ce04c43d364cfea7c2b32c69271b0929ab0ae257))
+* **deps:** update rust crate clap to v4.5.39 ([#369](https://github.com/philipcristiano/w2z/issues/369)) ([a7bb954](https://github.com/philipcristiano/w2z/commit/a7bb954c7d7410e70827c6cef8a8b1554cd8431b))
+* **deps:** update rust crate octocrab to v0.44.1 ([#358](https://github.com/philipcristiano/w2z/issues/358)) ([d6ddb13](https://github.com/philipcristiano/w2z/commit/d6ddb134fd20a0e234870e140445d73647c606ca))
+* **deps:** update rust crate rust-embed to v8.7.0 ([#342](https://github.com/philipcristiano/w2z/issues/342)) ([469eada](https://github.com/philipcristiano/w2z/commit/469eada04c0be1e5935feae695da7a60e9a9f6dd))
+* **deps:** update rust crate rust-embed to v8.7.1 ([#356](https://github.com/philipcristiano/w2z/issues/356)) ([94f6901](https://github.com/philipcristiano/w2z/commit/94f69017c60a34342296968411c36aa442c69b12))
+* **deps:** update rust crate rust-embed to v8.7.2 ([#363](https://github.com/philipcristiano/w2z/issues/363)) ([4359f93](https://github.com/philipcristiano/w2z/commit/4359f9344f167b1da7e6c0584dd873ef4fe42cb1))
+* **deps:** update rust crate serde_qs to 0.15.0 ([#349](https://github.com/philipcristiano/w2z/issues/349)) ([c051f29](https://github.com/philipcristiano/w2z/commit/c051f29590253d8a4ef1daa6de0e8b85cf0e843f))
+* **deps:** update rust crate tokio to v1.45.0 ([#357](https://github.com/philipcristiano/w2z/issues/357)) ([5fafd4a](https://github.com/philipcristiano/w2z/commit/5fafd4a384b79a7f55e179428b577768075688e2))
+* **deps:** update rust crate tokio to v1.45.1 ([#365](https://github.com/philipcristiano/w2z/issues/365)) ([f0fef9f](https://github.com/philipcristiano/w2z/commit/f0fef9f1bcae8466c40c1a076c1620ae141da250))
+* **deps:** update rust crate toml to v0.8.21 ([#350](https://github.com/philipcristiano/w2z/issues/350)) ([e4263d5](https://github.com/philipcristiano/w2z/commit/e4263d50cd4b29ecae424aceed8d0b26dd6715f6))
+* **deps:** update rust crate toml to v0.8.22 ([#352](https://github.com/philipcristiano/w2z/issues/352)) ([cf25cce](https://github.com/philipcristiano/w2z/commit/cf25ccedc04140d0233aef2db28f8fff528baa64))
+* **deps:** update rust crate tower-http to v0.6.3 ([#359](https://github.com/philipcristiano/w2z/issues/359)) ([4d98a6b](https://github.com/philipcristiano/w2z/commit/4d98a6b7832ac558157ea8bec1bab06eba11cead))
+* **deps:** update rust crate tower-http to v0.6.4 ([#360](https://github.com/philipcristiano/w2z/issues/360)) ([153285f](https://github.com/philipcristiano/w2z/commit/153285f59c933e040204881290bf6cd53467590d))
+* **deps:** update rust crate uuid to v1.17.0 ([#366](https://github.com/philipcristiano/w2z/issues/366)) ([4904e4b](https://github.com/philipcristiano/w2z/commit/4904e4bcbe83d2dbf2daa904cf00857f425a6dcf))
+
 ## [0.10.2](https://github.com/philipcristiano/w2z/compare/v0.10.1...v0.10.2) (2025-04-07)
 
 
