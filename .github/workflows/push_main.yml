@@ -43,3 +43,10 @@ jobs:
       script: |
         unset DATABASE_URL
         cargo build
+
+  nix-build:
+    uses: "philipcristiano/workflows/.github/workflows/nix.yml@main"
+    with:
+      script: |
+        unset DATABASE_URL
+        nix build

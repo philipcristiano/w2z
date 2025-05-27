@@ -1,4 +1,5 @@
 {
+
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
@@ -32,6 +33,8 @@
             shellHook = ''
             '';
           };
+
+        packages.default = nixpkgs.legacyPackages.${system}.callPackage ./default.nix {};
         }
       );
 }
