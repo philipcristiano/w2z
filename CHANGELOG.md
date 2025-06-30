@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.10.4](https://github.com/philipcristiano/w2z/compare/v0.10.3...v0.10.4) (2025-06-30)
+
+
+### Bug Fixes
+
+* **deps:** update rust crate clap to v4.5.40 ([#376](https://github.com/philipcristiano/w2z/issues/376)) ([1e1fdbb](https://github.com/philipcristiano/w2z/commit/1e1fdbba3ba1568022afad90323d055e1211e38c))
+* **deps:** update rust crate indexmap to v2.10.0 ([#380](https://github.com/philipcristiano/w2z/issues/380)) ([c608067](https://github.com/philipcristiano/w2z/commit/c6080679183cba6718f763952ebc4b3b3af62527))
+* **deps:** update rust crate toml to v0.8.23 ([#374](https://github.com/philipcristiano/w2z/issues/374)) ([28361ca](https://github.com/philipcristiano/w2z/commit/28361caf5522507e634f196466db44c51242cb16))
+* **deps:** update rust crate tower-http to v0.6.5 ([#371](https://github.com/philipcristiano/w2z/issues/371)) ([17cecac](https://github.com/philipcristiano/w2z/commit/17cecacab71d7bde064cf2eff9515443f099d5be))
+* **deps:** update rust crate tower-http to v0.6.6 ([#373](https://github.com/philipcristiano/w2z/issues/373)) ([847211f](https://github.com/philipcristiano/w2z/commit/847211f56d328d91ec40cc268f69bde965774e6f))
+
 ## [0.10.3](https://github.com/philipcristiano/w2z/compare/v0.10.2...v0.10.3) (2025-05-27)
 
 
