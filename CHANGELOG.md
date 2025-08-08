@@ -1,5 +1,31 @@
 # Changelog
 
+## [0.10.4](https://github.com/philipcristiano/w2z/compare/v0.10.3...v0.10.4) (2025-08-08)
+
+
+### Bug Fixes
+
+* **deps:** update rust crate clap to v4.5.40 ([#376](https://github.com/philipcristiano/w2z/issues/376)) ([1e1fdbb](https://github.com/philipcristiano/w2z/commit/1e1fdbba3ba1568022afad90323d055e1211e38c))
+* **deps:** update rust crate clap to v4.5.41 ([#388](https://github.com/philipcristiano/w2z/issues/388)) ([8858090](https://github.com/philipcristiano/w2z/commit/8858090c626b522b50fabe0dfba9605ddf619375))
+* **deps:** update rust crate clap to v4.5.42 ([#397](https://github.com/philipcristiano/w2z/issues/397)) ([146d5a7](https://github.com/philipcristiano/w2z/commit/146d5a7c1f403b59a1d313d6a55a0c3fb7b57260))
+* **deps:** update rust crate clap to v4.5.43 ([#403](https://github.com/philipcristiano/w2z/issues/403)) ([b1f59af](https://github.com/philipcristiano/w2z/commit/b1f59afd0718477c90cb2b1f971e06387f9441d2))
+* **deps:** update rust crate indexmap to v2.10.0 ([#380](https://github.com/philipcristiano/w2z/issues/380)) ([c608067](https://github.com/philipcristiano/w2z/commit/c6080679183cba6718f763952ebc4b3b3af62527))
+* **deps:** update rust crate serde_json to v1.0.141 ([#392](https://github.com/philipcristiano/w2z/issues/392)) ([65c41c5](https://github.com/philipcristiano/w2z/commit/65c41c5797020614e89072f7d985359b304e7849))
+* **deps:** update rust crate serde_json to v1.0.142 ([#399](https://github.com/philipcristiano/w2z/issues/399)) ([54321ac](https://github.com/philipcristiano/w2z/commit/54321ace8cdb7a592028dd8294048607228fb7ac))
+* **deps:** update rust crate service_conventions to 0.0.30 ([#383](https://github.com/philipcristiano/w2z/issues/383)) ([2a177c8](https://github.com/philipcristiano/w2z/commit/2a177c8454f63818fdb63dd8df1f0bbae217f458))
+* **deps:** update rust crate tokio to v1.46.0 ([#384](https://github.com/philipcristiano/w2z/issues/384)) ([cf8e55c](https://github.com/philipcristiano/w2z/commit/cf8e55c93afca1af3f67e31368e16b05f4b7b4e4))
+* **deps:** update rust crate tokio to v1.46.1 ([#385](https://github.com/philipcristiano/w2z/issues/385)) ([1bb1f42](https://github.com/philipcristiano/w2z/commit/1bb1f424a27797aaa74833a6bf40beba8b169730))
+* **deps:** update rust crate tokio to v1.47.0 ([#394](https://github.com/philipcristiano/w2z/issues/394)) ([c0ceb1d](https://github.com/philipcristiano/w2z/commit/c0ceb1d8511ac3f6c33c7164752608b24b5ff58e))
+* **deps:** update rust crate toml to 0.9.0 ([#387](https://github.com/philipcristiano/w2z/issues/387)) ([a2a2729](https://github.com/philipcristiano/w2z/commit/a2a2729b20128e75e23f79a46ac54fbbae999012))
+* **deps:** update rust crate toml to v0.8.23 ([#374](https://github.com/philipcristiano/w2z/issues/374)) ([28361ca](https://github.com/philipcristiano/w2z/commit/28361caf5522507e634f196466db44c51242cb16))
+* **deps:** update rust crate toml to v0.9.1 ([#389](https://github.com/philipcristiano/w2z/issues/389)) ([50d064b](https://github.com/philipcristiano/w2z/commit/50d064b728575b332b5ab6e9c85f08e63237f2b0))
+* **deps:** update rust crate toml to v0.9.2 ([#390](https://github.com/philipcristiano/w2z/issues/390)) ([caa4e55](https://github.com/philipcristiano/w2z/commit/caa4e55f72d39ab8e23a79013b896fb1c4ba8acf))
+* **deps:** update rust crate toml to v0.9.3 ([#396](https://github.com/philipcristiano/w2z/issues/396)) ([f863b5c](https://github.com/philipcristiano/w2z/commit/f863b5ccfe7a4e7308917f0a78ee57bf937a583c))
+* **deps:** update rust crate toml to v0.9.4 ([#398](https://github.com/philipcristiano/w2z/issues/398)) ([a87a831](https://github.com/philipcristiano/w2z/commit/a87a831552e3faa83fbcc8900b254c0174a10f80))
+* **deps:** update rust crate toml to v0.9.5 ([#402](https://github.com/philipcristiano/w2z/issues/402)) ([98f7f34](https://github.com/philipcristiano/w2z/commit/98f7f3499cb032a03eca5fa7fdeb6a58decf38eb))
+* **deps:** update rust crate tower-http to v0.6.5 ([#371](https://github.com/philipcristiano/w2z/issues/371)) ([17cecac](https://github.com/philipcristiano/w2z/commit/17cecacab71d7bde064cf2eff9515443f099d5be))
+* **deps:** update rust crate tower-http to v0.6.6 ([#373](https://github.com/philipcristiano/w2z/issues/373)) ([847211f](https://github.com/philipcristiano/w2z/commit/847211f56d328d91ec40cc268f69bde965774e6f))
+
 ## [0.10.3](https://github.com/philipcristiano/w2z/compare/v0.10.2...v0.10.3) (2025-05-27)
 
 
