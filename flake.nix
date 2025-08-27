@@ -23,13 +23,7 @@
                 })
                 rust-analyzer
                 pkgs.tailwindcss
-                pkgs.openssl # native-tls is included in cargo, needs work to remove
-            ] ++
-              pkgs.lib.optionals pkgs.stdenv.isDarwin [
-                darwin.apple_sdk.frameworks.Security # Should only be for darwin
-                darwin.apple_sdk.frameworks.SystemConfiguration
-            ]
-            ;
+            ];
             shellHook = ''
             '';
           };
