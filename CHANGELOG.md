@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.10.5](https://github.com/philipcristiano/w2z/compare/v0.10.4...v0.10.5) (2025-09-09)
+
+
+### Bug Fixes
+
+* **deps:** update rust crate chrono to v0.4.42 ([#428](https://github.com/philipcristiano/w2z/issues/428)) ([32708ca](https://github.com/philipcristiano/w2z/commit/32708ca28863c02df0c67815fae2a4897402714f))
+* **deps:** update rust crate clap to v4.5.47 ([#424](https://github.com/philipcristiano/w2z/issues/424)) ([1f6c55b](https://github.com/philipcristiano/w2z/commit/1f6c55b92392c25ff33e30824d6ee57a6f179584))
+* **deps:** update rust crate indexmap to v2.11.1 ([#429](https://github.com/philipcristiano/w2z/issues/429)) ([1cb4afa](https://github.com/philipcristiano/w2z/commit/1cb4afa440659d5fe6223c6093f9530a64aaa512))
+* **deps:** update rust crate uuid to v1.18.1 ([#425](https://github.com/philipcristiano/w2z/issues/425)) ([0495cf1](https://github.com/philipcristiano/w2z/commit/0495cf18cc3dfcde157a4db76f16d2e4c0cd6881))
+
 ## [0.10.4](https://github.com/philipcristiano/w2z/compare/v0.10.3...v0.10.4) (2025-08-27)
 
 
