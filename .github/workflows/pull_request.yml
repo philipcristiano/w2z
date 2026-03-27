@@ -16,11 +16,13 @@ jobs:
         uses: agenthunt/conventional-commit-checker-action@v2.0.0
 
   docker_build:
+    runs-on: ubuntu-latest
     uses: "philipcristiano/workflows/.github/workflows/docker-build.yml@main"
     with:
       timeout: 25
 
   rust:
+    runs-on: ubuntu-latest
     uses: "philipcristiano/workflows/.github/workflows/rust.yml@main"
     with:
       setup_script: |
@@ -29,6 +31,7 @@ jobs:
           mv tailwindcss /usr/local/bin
 
   flake:
+    runs-on: ubuntu-latest
     uses: "philipcristiano/workflows/.github/workflows/nix.yml@main"
     with:
       flakes-from-devshell: true
@@ -37,6 +40,7 @@ jobs:
         cargo build
 
   nix-build:
+    runs-on: ubuntu-latest
     uses: "philipcristiano/workflows/.github/workflows/nix.yml@main"
     with:
       script: |
