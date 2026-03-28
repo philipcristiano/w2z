@@ -12,7 +12,7 @@ jobs:
     runs-on: nixos-latest
     steps:
       - name: Install Node
-        run: nix-env -i nodejs
+        run: nix-env -iA nodejs
       - uses: actions/checkout@v4
       - name: Build
         env:
