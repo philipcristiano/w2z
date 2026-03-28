@@ -42,6 +42,8 @@
           devShells.default = mkShell {
             buildInputs = [
                 rust-bin.stable.latest.default
+                pkgs.rust-analyzer
+                pkgs.tailwindcss
             ];
           };
           packages.default = package;
