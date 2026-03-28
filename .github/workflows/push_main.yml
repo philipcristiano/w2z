@@ -37,12 +37,9 @@ jobs:
           release-type: rust
 
   flake:
-    uses: "philipcristiano/workflows/.github/workflows/nix.yml@main"
-    with:
-      flakes-from-devshell: true
-      script: |
-        unset DATABASE_URL
-        cargo build
+    runs-on: nixos-latest
+    run: |
+        nix build '.#docker'
 
   nix-build:
     uses: "philipcristiano/workflows/.github/workflows/nix.yml@main"

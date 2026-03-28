@@ -1,5 +1,4 @@
 {
-
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
@@ -13,22 +12,47 @@
           pkgs = import nixpkgs {
             inherit system overlays;
           };
+          rustToolchain = pkgs.rust-bin.stable.latest.default;
+          package_version = "0.2.3";
+          package_name = "w2z";
+
+          linuxPkgs = import nixpkgs {
+            system = "x86_64-linux";
+            overlays = overlays;
+          };
+          package = pkgs.rustPlatform.buildRustPackage {
+            pname = package_name;
+            version = package_version;
+            src = ./.;
+            cargoLock.lockFile = ./Cargo.lock;
+
+            nativeBuildInputs = [ rustToolchain ];
+          };
+                    # Build the package targeting linux for the Docker image
+          linuxPackage = linuxPkgs.rustPlatform.buildRustPackage {
+            pname = package_name;
+            version = package_version;
+            src = ./.;
+            cargoLock.lockFile = ./Cargo.lock;
+            nativeBuildInputs = [ linuxPkgs.rust-bin.stable.latest.default ];
+          };
         in
         with pkgs;
         {
           devShells.default = mkShell {
             buildInputs = [
-                (rust-bin.stable.latest.default.override {
-                    extensions = [ "rust-src" "rustfmt" ];
-                })
-                rust-analyzer
-                pkgs.tailwindcss
+                rust-bin.stable.latest.default
             ];
-            shellHook = ''
-            '';
           };
-
-        packages.default = nixpkgs.legacyPackages.${system}.callPackage ./default.nix {};
+          packages.default = package;
+          packages.docker = linuxPkgs.dockerTools.buildLayeredImage {
+            name = package_name;
+            tag = package_version;
+            contents = [ linuxPackage ];
+            config = {
+              Cmd = [ "/bin/w2z" ];
+            };
+          };
         }
       );
 }
